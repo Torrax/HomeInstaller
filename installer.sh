@@ -205,9 +205,7 @@ mosquitto:
         - "1883:1883"
         - "9001:9001"
     volumes:
-        - /opt/mosquitto/config:/mosquitto/config
-        - /opt/mosquitto/data:/mosquitto/data
-        - /opt/mosquitto/log:/mosquitto/log
+        - /opt/mosquitto:/mosquitto
     networks:
         - homenet
 EOL
@@ -215,6 +213,19 @@ EOL
     else
         msg warning "Mosquitto entry already exists in docker-compose.yaml"
     fi
+
+    sudo mkdir /opt/mosquitto | sudo mkdir /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
+
+    cat << EOL >> /opt/mosquitto/config/mosquitto.conf
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+listener 1883
+
+## Authentication ##
+allow_anonymous true
+EOL
+    
     docker-compose -f /opt/docker-compose.yaml up -d
     if docker ps | grep -q "mosquitto"; then
         print_menu
@@ -232,15 +243,15 @@ install_kuma() {
     msg info "Installing Kuma Uptime..."
     if ! grep -q "kuma:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-kuma:
+  kuma:
+    image: louislam/uptime-kuma
     container_name: kuma
-    image: "kumahq/kuma"
-    ports:
-        - "5681:5681"
     volumes:
-        - /opt/kuma/config:/kuma/config
-    networks:
-        - homenet
+      - /opt/kuma:/app/data
+    ports:
+      - "3001:3001"
+    restart: always
+
 EOL
         msg success "Kuma configuration added to docker-compose.yaml"
     else
