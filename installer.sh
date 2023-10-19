@@ -191,6 +191,71 @@ EOL
     fi
 }
 
+### MOSQUITTO MQTT INSTALLER ###
+install_mosquitto() {
+    check_docker
+    clear
+    msg info "Installing Mosquitto MQTT..."
+    if ! grep -q "mosquitto:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+mosquitto:
+    container_name: mosquitto
+    image: "eclipse-mosquitto"
+    ports:
+        - "1883:1883"
+        - "9001:9001"
+    volumes:
+        - /opt/mosquitto/config:/mosquitto/config
+        - /opt/mosquitto/data:/mosquitto/data
+        - /opt/mosquitto/log:/mosquitto/log
+    networks:
+        - homenet
+EOL
+        msg success "Mosquitto configuration added to docker-compose.yaml"
+    else
+        msg warning "Mosquitto entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "mosquitto"; then
+        print_menu
+        msg success "Mosquitto successfully installed and running\n"
+    else
+        print_menu
+        msg error "Mosquitto container failed to start\n"
+    fi
+}
+
+### KUMA UPTIME INSTALLER ###
+install_kuma() {
+    check_docker
+    clear
+    msg info "Installing Kuma Uptime..."
+    if ! grep -q "kuma:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+kuma:
+    container_name: kuma
+    image: "kumahq/kuma"
+    ports:
+        - "5681:5681"
+    volumes:
+        - /opt/kuma/config:/kuma/config
+    networks:
+        - homenet
+EOL
+        msg success "Kuma configuration added to docker-compose.yaml"
+    else
+        msg warning "Kuma entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "kuma"; then
+        print_menu
+        msg success "Kuma successfully installed and running\n"
+    else
+        print_menu
+        msg error "Kuma container failed to start\n"
+    fi
+}
+
 ###   LOGITECH MEDIA SERVER INSTALLER   ###
 install_lms() {
     check_docker
@@ -398,6 +463,120 @@ EOL
         print_menu
 	    msg error "Apache Web Server failed to start\n"
 	fi
+}
+
+### DUCKDNS INSTALLER ###
+install_duckdns() {
+    check_docker
+    clear
+    msg info "Installing DuckDNS..."
+    if ! grep -q "duckdns:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+duckdns:
+    container_name: duckdns
+    image: "linuxserver/duckdns"
+    environment:
+        - SUBDOMAINS=subdomain
+        - TOKEN=token
+    restart: unless-stopped
+    networks:
+        - homenet
+EOL
+        msg success "DuckDNS configuration added to docker-compose.yaml"
+    else
+        msg warning "DuckDNS entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "duckdns"; then
+        print_menu
+        msg success "DuckDNS successfully installed and running\n"
+    else
+        print_menu
+        msg error "DuckDNS container failed to start\n"
+    fi
+}
+
+### WIREGUARD INSTALLER ###
+install_wireguard() {
+    check_docker
+    clear
+    msg info "Installing WireGuard..."
+    if ! grep -q "wireguard:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+wireguard:
+    container_name: wireguard
+    image: "linuxserver/wireguard"
+    cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+    environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/London
+    volumes:
+        - /opt/wireguard/config:/config
+        - /lib/modules:/lib/modules
+    ports:
+        - "51820:51820/udp"
+    sysctls:
+        - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+        - homenet
+EOL
+        msg success "WireGuard configuration added to docker-compose.yaml"
+    else
+        msg warning "WireGuard entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "wireguard"; then
+        print_menu
+        msg success "WireGuard successfully installed and running\n"
+    else
+        print_menu
+        msg error "WireGuard container failed to start\n"
+    fi
+}
+
+### ADGUARD INSTALLER ###
+install_adguard() {
+    check_docker
+    clear
+    msg info "Installing AdGuard..."
+    if ! grep -q "adguard:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+adguard:
+    container_name: adguard
+    image: "adguard/adguardhome"
+    volumes:
+        - /opt/adguard/data:/var/lib/adguard
+        - /opt/adguard/conf:/opt/adguardhome/conf
+    ports:
+        - "53:53/tcp"
+        - "53:53/udp"
+        - "67:67/udp"
+        - "68:68/tcp"
+        - "68:68/udp"
+        - "80:80/tcp"
+        - "443:443/tcp"
+        - "853:853/tcp"
+        - "3000:3000/tcp"
+    restart: unless-stopped
+    networks:
+        - homenet
+EOL
+        msg success "AdGuard configuration added to docker-compose.yaml"
+    else
+        msg warning "AdGuard entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "adguard"; then
+        print_menu
+        msg success "AdGuard successfully installed and running\n"
+    else
+        print_menu
+        msg error "AdGuard container failed to start\n"
+    fi
 }
 
 ###   NUT INSTALLER   ###
@@ -809,7 +988,7 @@ check_docker() {
 ###   AUTOMATION   ###
 install_automation() {
     PS3='Select Application for Download: '
-    automation_options=("Home Assistant" "Node Red" "Back")
+    automation_options=("Home Assistant" "Node Red" "Mosquitto" "Kuma Uptime" "Back")
     select automation_opt in "${automation_options[@]}"
     do
         case $REPLY in     
@@ -819,7 +998,13 @@ install_automation() {
             2) ###   NODE RED
                 install_nodered
     		    ;;
-            3) ###   BACK
+	    3) ###   MOSQUITTO MQTT
+                install_mosquitto
+    		    ;;
+            4) ###   KUMA UPTIME
+                install_kuma
+    		    ;;
+            5) ###   BACK
                 print_menu
                 break
                 ;;
@@ -881,17 +1066,26 @@ install_security() {
 ###   NETWORK   ###
 install_network() {
     PS3='Select Application for Download: '
-    network_options=("Cloudflared" "Web Server" "Back")
+    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Back")
     select network_opt in "${network_options[@]}"
     do
         case $REPLY in
             1)  ###   CLOUDFLARED
                 install_cloudflared
     		    ;;
-            2)  ###   APACHE WEB SERVER
+            2)  ###   DUCK DNS
+                install_duckdns
+    		    ;;
+            3)  ###   APACHE WEB SERVER
                 install_apache
     		    ;;
-            3) ###   BACK
+            4)  ###   WIREGUARD SERVER
+                install_wireguard
+    		    ;;
+            5)  ###   ADGUARD SERVER
+                install_adguard
+    		    ;;
+            6) ###   BACK
                 print_menu
                 break
                 ;;
