@@ -489,7 +489,7 @@ install_duckdns() {
     msg info "Installing DuckDNS..."
     if ! grep -q "duckdns:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-duckdns:
+  duckdns:
     container_name: duckdns
     image: "linuxserver/duckdns"
     environment:
@@ -520,7 +520,7 @@ install_wireguard() {
     msg info "Installing WireGuard..."
     if ! grep -q "wireguard:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-wireguard:
+  wireguard:
     container_name: wireguard
     image: "linuxserver/wireguard"
     cap_add:
@@ -562,7 +562,7 @@ install_adguard() {
     msg info "Installing AdGuard..."
     if ! grep -q "adguard:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-adguard:
+  adguard:
     container_name: adguard
     image: "adguard/adguardhome"
     volumes:
