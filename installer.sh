@@ -502,6 +502,7 @@ install_duckdns() {
     restart: unless-stopped
     networks:
         - homenet
+
 EOL
         msg success "DuckDNS configuration added to docker-compose.yaml"
     else
@@ -543,6 +544,7 @@ install_wireguard() {
     restart: unless-stopped
     networks:
         - homenet
+
 EOL
         msg success "WireGuard configuration added to docker-compose.yaml"
     else
@@ -565,7 +567,7 @@ install_traefik() {
     msg info "Installing Traefik..."
     if ! grep -q "traefik:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-traefik:
+  traefik:
     container_name: traefik
     image: "traefik"
     ports:
@@ -576,6 +578,7 @@ traefik:
         - /opt/traefik:/etc/traefik
     networks:
         - homenet
+
 EOL
         msg success "Traefik configuration added to docker-compose.yaml"
     else
@@ -617,6 +620,7 @@ install_adguard() {
     restart: unless-stopped
     networks:
         - homenet
+
 EOL
         msg success "AdGuard configuration added to docker-compose.yaml"
     else
