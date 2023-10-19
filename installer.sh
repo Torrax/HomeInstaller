@@ -1119,7 +1119,7 @@ install_security() {
 ###   NETWORK   ###
 install_network() {
     PS3='Select Application for Download: '
-    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Traefic" "Back")
+    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Traefik" "Back")
     select network_opt in "${network_options[@]}"
     do
         case $REPLY in
@@ -1138,8 +1138,8 @@ install_network() {
             5)  ###   ADGUARD SERVER
                 install_adguard
     		;;
-            6) ###   TRAEFIC
-                install_traefic
+            6) ###   TRAEFIK
+                install_traefik
                 ;;
             7) ###   BACK
                 print_menu
