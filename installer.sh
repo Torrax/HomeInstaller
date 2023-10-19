@@ -558,6 +558,39 @@ EOL
     fi
 }
 
+### TRAEFIK INSTALLER ###
+install_traefik() {
+    check_docker
+    clear
+    msg info "Installing Traefik..."
+    if ! grep -q "traefik:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+traefik:
+    container_name: traefik
+    image: "traefik"
+    ports:
+        - "80:80"
+        - "443:443"
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /opt/traefik:/etc/traefik
+    networks:
+        - homenet
+EOL
+        msg success "Traefik configuration added to docker-compose.yaml"
+    else
+        msg warning "Traefik entry already exists in docker-compose.yaml"
+    fi
+    docker-compose -f /opt/docker-compose.yaml up -d
+    if docker ps | grep -q "traefik"; then
+        print_menu
+        msg success "Traefik successfully installed and running\n"
+    else
+        print_menu
+        msg error "Traefik container failed to start\n"
+    fi
+}
+
 ### ADGUARD INSTALLER ###
 install_adguard() {
     check_docker
@@ -1086,26 +1119,29 @@ install_security() {
 ###   NETWORK   ###
 install_network() {
     PS3='Select Application for Download: '
-    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Back")
+    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Traefic" "Back")
     select network_opt in "${network_options[@]}"
     do
         case $REPLY in
             1)  ###   CLOUDFLARED
                 install_cloudflared
-    		    ;;
+    		;;
             2)  ###   DUCK DNS
                 install_duckdns
-    		    ;;
+    		;;
             3)  ###   APACHE WEB SERVER
                 install_apache
-    		    ;;
+    		;;
             4)  ###   WIREGUARD SERVER
                 install_wireguard
-    		    ;;
+    		;;
             5)  ###   ADGUARD SERVER
                 install_adguard
-    		    ;;
-            6) ###   BACK
+    		;;
+            6) ###   TRAEFIC
+                install_traefic
+                ;;
+            7) ###   BACK
                 print_menu
                 break
                 ;;
