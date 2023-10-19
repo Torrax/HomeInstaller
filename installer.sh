@@ -198,7 +198,7 @@ install_mosquitto() {
     msg info "Installing Mosquitto MQTT..."
     if ! grep -q "mosquitto:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
-mosquitto:
+  mosquitto:
     container_name: mosquitto
     image: "eclipse-mosquitto"
     ports:
