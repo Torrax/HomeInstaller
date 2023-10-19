@@ -138,7 +138,7 @@ EOL
         msg warning "Home Assistant entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans --remove-orphans
             
     if docker ps | grep -q "homeassistant"; then
         print_menu
@@ -177,7 +177,7 @@ EOL
         msg warning "Node-RED entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     		
     # Set same user as Node Red to allow permissions on shared volume.
     sudo chown -R 1000:1000 /opt/node-red/config
@@ -226,7 +226,7 @@ listener 1883
 allow_anonymous true
 EOL
     
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "mosquitto"; then
         print_menu
         msg success "Mosquitto successfully installed and running\n"
@@ -257,7 +257,7 @@ EOL
     else
         msg warning "Kuma entry already exists in docker-compose.yaml"
     fi
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "kuma"; then
         print_menu
         msg success "Kuma successfully installed and running\n"
@@ -301,7 +301,7 @@ EOL
         msg warning "Logitech Media Server entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
             
     if docker ps | grep -q "logitechmediaserver"; then
         print_menu
@@ -355,7 +355,7 @@ EOL
         msg warning "Frigate NVR entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
             
     if docker ps | grep -q "frigate"; then
         print_menu
@@ -465,7 +465,7 @@ EOL
         msg warning "Apache entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     		
     if docker ps | grep -q "apache"; then
         print_menu
@@ -497,7 +497,7 @@ EOL
     else
         msg warning "DuckDNS entry already exists in docker-compose.yaml"
     fi
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "duckdns"; then
         print_menu
         msg success "DuckDNS successfully installed and running\n"
@@ -539,7 +539,7 @@ EOL
     else
         msg warning "WireGuard entry already exists in docker-compose.yaml"
     fi
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "wireguard"; then
         print_menu
         msg success "WireGuard successfully installed and running\n"
@@ -580,7 +580,7 @@ EOL
     else
         msg warning "AdGuard entry already exists in docker-compose.yaml"
     fi
-    docker-compose -f /opt/docker-compose.yaml up -d
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "adguard"; then
         print_menu
         msg success "AdGuard successfully installed and running\n"
