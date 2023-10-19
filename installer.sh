@@ -138,7 +138,7 @@ EOL
         msg warning "Home Assistant entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans --remove-orphans
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
             
     if docker ps | grep -q "homeassistant"; then
         print_menu
