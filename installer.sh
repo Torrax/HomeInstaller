@@ -571,14 +571,30 @@ install_traefik() {
     container_name: traefik
     image: "traefik"
     ports:
-        - "80:80"
-        - "443:443"
+      - "80:80"
+      - "443:443"
     volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /opt/traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik:/etc/traefik
     networks:
-        - homenet
-
+      - homenet
+    labels:
+      - "traefik.enable=true"                                                                       # Enable Traefik for this container
+      - "traefik.http.routers.traefik.entrypoints=http"                                             # Specify HTTP entrypoint
+      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.com`)"             # Set rule for router
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=USER:BASIC_AUTH_PASSWORD"            # Basic authentication
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"               # HTTPS redirect
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"   # Set header for SSL
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"                           # Apply HTTPS redirect middleware
+      - "traefik.http.routers.traefik-secure.entrypoints=https"                                     # Specify HTTPS entrypoint
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.com`)"      # Set rule for secure router
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"                              # Apply auth middleware
+      - "traefik.http.routers.traefik-secure.tls=true"                                              # Enable TLS
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"                           # Set certificate resolver
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.com"                 # Set main domain for TLS
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.com"               # Set SANs for TLS
+      - "traefik.http.routers.traefik-secure.service=api@internal"                                  # Set service for secure router
+      
 EOL
         msg success "Traefik configuration added to docker-compose.yaml"
     else
