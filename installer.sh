@@ -96,7 +96,7 @@ shutdown() {
                 ;;
             n|N)
                 msg info "Exiting without rebooting."
-                break 2  # Exit both the case and the outer select loop
+                exit  # Exit both the case and the outer select loop
                 ;;
             *)
                 msg error "Invalid input. Please enter y or n."
