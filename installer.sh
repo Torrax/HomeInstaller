@@ -214,9 +214,12 @@ EOL
         msg warning "Mosquitto entry already exists in docker-compose.yaml"
     fi
 
-    sudo mkdir /opt/mosquitto | sudo mkdir /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
+    
 
-    cat << EOL >> /opt/mosquitto/config/mosquitto.conf
+    if [[ ! -s /opt/mosquitto/config/mosquitto.conf ]]; then
+    sudo mkdir /opt/mosquitto | sudo mkdir /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
+    
+        cat << EOL >> /opt/mosquitto/config/mosquitto.conf
 persistence true
 persistence_location /mosquitto/data/
 log_dest file /mosquitto/log/mosquitto.log
@@ -225,6 +228,9 @@ listener 1883
 ## Authentication ##
 allow_anonymous true
 EOL
+    else
+        msg info "Configuration file already exists, skipping..."
+    fi
     
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "mosquitto"; then
