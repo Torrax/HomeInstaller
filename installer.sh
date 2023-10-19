@@ -493,8 +493,12 @@ install_duckdns() {
     container_name: duckdns
     image: "linuxserver/duckdns"
     environment:
-        - SUBDOMAINS=subdomain
-        - TOKEN=token
+      - PUID=999
+      - PGID=999
+      - SUBDOMAINS=subdomain
+      - TOKEN=token
+    volumes:
+      - /opt/duckdns:/config
     restart: unless-stopped
     networks:
         - homenet
@@ -527,11 +531,10 @@ install_wireguard() {
         - NET_ADMIN
         - SYS_MODULE
     environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/London
+        - PUID=998
+        - PGID=998
     volumes:
-        - /opt/wireguard/config:/config
+        - /opt/wireguard:/config
         - /lib/modules:/lib/modules
     ports:
         - "51820:51820/udp"
