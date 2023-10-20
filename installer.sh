@@ -841,7 +841,7 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
-    
+
 services:
 
 EOL
