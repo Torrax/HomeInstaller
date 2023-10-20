@@ -47,7 +47,7 @@ startup() {
         mkdir -p /logs
     fi
 
-    sudo apt install net-tools
+    sudo apt install -y net-tools
 
     if [[ $EUID -ne 0 ]]; then
         msg error "Please run this script with sudo or as root."
