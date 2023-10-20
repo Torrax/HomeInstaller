@@ -622,7 +622,8 @@ install_adguard() {
     image: "adguard/adguardhome"
     volumes:
         - /opt/adguard/data:/var/lib/adguard
-        - /opt/adguard/conf:/opt/adguardhome/conf
+        - /opt/adguard/conf:/opt/adguardhome
+#	- /opt/shared/certs/example.com:/certs # optional: if you have your own SSL cert
     ports:
         - "53:53/tcp"
         - "53:53/udp"
@@ -632,7 +633,7 @@ install_adguard() {
         - "80:80/tcp"
         - "443:443/tcp"
         - "853:853/tcp"
-        - "3000:3000/tcp"
+        - "3000:3000/tcp" # For Initial Setup
     restart: unless-stopped
     networks:
         - homenet
