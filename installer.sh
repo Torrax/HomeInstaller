@@ -217,6 +217,9 @@ EOL
     else
         msg warning "Mosquitto entry already exists in docker-compose.yaml"
     fi
+
+    if [[ ! -s /opt/mosquitto/config/mosquitto.conf ]]; then
+        sudo mkdir /opt/mosquitto | sudo mkdir /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
     
         cat << EOL >> /opt/mosquitto/config/mosquitto.conf
 persistence true
