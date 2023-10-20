@@ -838,8 +838,10 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
+    
   autonet:
     driver: bridge
+    
   servervlan:
     name: servervlan
     driver: macvlan
@@ -848,7 +850,7 @@ networks:
     ipam:
       config:
         - subnet: "192.168.1.0/24"
-          ip_range: "192.168.1.50/29"   # VLAN for IPS 200 - 205
+          ip_range: "192.168.1.50/29"   # VLAN /29 for 5 IPS
           gateway: "192.168.1.1"
 
 services:
