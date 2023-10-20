@@ -645,6 +645,10 @@ EOL
     else
         msg warning "AdGuard entry already exists in docker-compose.yaml"
     fi
+
+    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
+    sudo systemctl stop systemd-resolved                # This will require a reboot
+    
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "adguard"; then
         print_menu
@@ -836,20 +840,7 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
-    driver_opts:
-      parent: eth1                       # using ifconfig
-    ipam:
-      config:
-        - subnet: "192.168.1.0/24"
-          ip_range: "192.168.1.50/29"   # VLAN /29 for 5 IPS
-          gateway: "192.168.1.1"
-
     
-  autonet:
-    driver: bridge
-    
-
-
 services:
 
 EOL
