@@ -638,7 +638,7 @@ install_adguard() {
         - "3000:3000/tcp" # For Initial Setup
     restart: unless-stopped
     networks:
-        - homenet
+#        - homenet
 	servervlan:
       ipv4_address: 192.168.1.51   # IP address inside the defined range
 
@@ -838,13 +838,6 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
-    
-  autonet:
-    driver: bridge
-    
-  servervlan:
-    name: servervlan
-    driver: macvlan
     driver_opts:
       parent: eth1                       # using ifconfig
     ipam:
@@ -852,6 +845,12 @@ networks:
         - subnet: "192.168.1.0/24"
           ip_range: "192.168.1.50/29"   # VLAN /29 for 5 IPS
           gateway: "192.168.1.1"
+
+    
+  autonet:
+    driver: bridge
+    
+
 
 services:
 
