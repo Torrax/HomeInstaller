@@ -631,16 +631,14 @@ install_adguard() {
         - "53:53/udp"
         - "67:67/udp"
         - "68:68/tcp"
-        - "68:68/udp"
         - "80:80/tcp"
         - "443:443/tcp"
         - "853:853/tcp"
         - "3000:3000/tcp" # For Initial Setup
     restart: unless-stopped
     networks:
-#        - homenet
-	servervlan:
-      ipv4_address: 192.168.1.51   # IP address inside the defined range
+        homenet:
+          ipv4_address: 192.168.1.51   # IP address inside the defined range
 
 EOL
         msg success "AdGuard configuration added to docker-compose.yaml"
