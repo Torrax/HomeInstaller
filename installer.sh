@@ -623,8 +623,8 @@ install_adguard() {
     container_name: adguard
     image: "adguard/adguardhome"
     volumes:
-        - /opt/adguard/data:/var/lib/adguard
-        - /opt/adguard/conf:/opt/adguardhome
+        - /opt/adguard/work:/opt/adguardhome/work
+        - /opt/adguard/conf:/opt/adguardhome/conf
 #	- /opt/shared/certs/example.com:/certs # optional: if you have your own SSL cert
     ports:
         - "53:53/tcp"
