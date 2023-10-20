@@ -631,7 +631,7 @@ install_adguard() {
         - "53:53/udp"
         - "67:67/udp"
         - "68:68/tcp"
-        - "80:80/tcp"
+        - "800:800/tcp"
         - "443:443/tcp"
         - "853:853/tcp"
         - "3000:3000/tcp" # For Initial Setup
