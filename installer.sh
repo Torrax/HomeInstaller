@@ -639,7 +639,7 @@ install_adguard() {
     restart: unless-stopped
     networks:
         - homenet
-	dockervlan:
+	servervlan:
       ipv4_address: 192.168.1.51   # IP address inside the defined range
 
 EOL
