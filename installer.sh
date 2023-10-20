@@ -144,7 +144,8 @@ EOL
             
     if docker ps | grep -q "homeassistant"; then
         print_menu
-        msg success "Home Assistant successfully installed and running\n"
+        msg success "Home Assistant successfully installed and running"
+	msg "http://localhost:80\n"
     else
         print_menu
         msg error "Home Assistant container failed to start\n"
@@ -186,7 +187,8 @@ EOL
     		
     if docker ps | grep -q "nodered"; then
         print_menu
-        msg success "Node-RED successfully installed and running\n"
+        msg success "Node-RED successfully installed and running"
+	msg "http://localhost:1880\n"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -237,7 +239,8 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "mosquitto"; then
         print_menu
-        msg success "Mosquitto successfully installed and running\n"
+        msg success "Mosquitto successfully installed and running"
+	msg "http://localhost:1883\n"
     else
         print_menu
         msg error "Mosquitto container failed to start\n"
@@ -268,7 +271,8 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "kuma"; then
         print_menu
-        msg success "Kuma successfully installed and running\n"
+        msg success "Kuma successfully installed and running"
+	msg "http://localhost:3001\n"
     else
         print_menu
         msg error "Kuma container failed to start\n"
@@ -313,7 +317,8 @@ EOL
             
     if docker ps | grep -q "logitechmediaserver"; then
         print_menu
-        msg success "Logitech Media Server successfully installed and running\n"
+        msg success "Logitech Media Server successfully installed and running"
+	msg "http://localhost:9000\n"
     else
         print_menu
         msg error "Logitech Media Server container failed to start\n"
@@ -367,7 +372,8 @@ EOL
             
     if docker ps | grep -q "frigate"; then
         print_menu
-        msg success "Frigate NVR successfully installed and running\n"
+        msg success "Frigate NVR successfully installed and running"
+	msg "http://localhost:5000\n"
     else
         print_menu
         msg error "Frigate NVR container failed to start\n"
@@ -477,7 +483,8 @@ EOL
     		
     if docker ps | grep -q "apache"; then
         print_menu
-        msg success "Apache Web Server successfully installed and running\n"
+        msg success "Apache Web Server successfully installed and running"
+	msg "http://localhost:8080\n"
 	else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
@@ -605,7 +612,8 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d
     if docker ps | grep -q "traefik"; then
         print_menu
-        msg success "Traefik successfully installed and running\n"
+        msg success "Traefik successfully installed and running"
+	msg "http://localhost:80\n"
     else
         print_menu
         msg error "Traefik container failed to start\n"
@@ -653,7 +661,8 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "adguard"; then
         print_menu
-        msg success "AdGuard successfully installed and running\n"
+        msg success "AdGuard successfully installed and running"
+	msg "http://localhost:800\n"
     else
         print_menu
         msg error "AdGuard container failed to start\n"
@@ -885,7 +894,8 @@ EOL
     
     if docker ps | grep -q "portainer"; then
         print_menu
-        msg success "Portainer successfully installed and running\n"
+        msg success "Portainer successfully installed and running"
+	msg "http://localhost:9443\n"
     else
         print_menu
         msg error "Portainer container failed to start\n"
