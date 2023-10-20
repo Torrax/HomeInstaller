@@ -855,10 +855,17 @@ EOL
 
     # The script is finished
     msg success "\nDocker and Docker Compose installed successfully!\n"
+
+    install_portainer
 }
 
 ### PORTAINER INSTALLER ###
 install_portainer() {
+    check_docker
+    clear
+    msg info "Installing Portainer..."
+    if ! grep -q "portainer:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
   portainer:
     image: portainer/portainer-ce:latest
     ports:
