@@ -857,6 +857,34 @@ EOL
     msg success "\nDocker and Docker Compose installed successfully!\n"
 }
 
+### PORTAINER INSTALLER ###
+install_portainer() {
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+      volumes:
+        - /opt/portainer/data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+EOL
+        msg success "Portainer configuration added to docker-compose.yaml"
+    else
+        msg warning "Portainer entry already exists in docker-compose.yaml"
+    fi
+    
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+    
+    if docker ps | grep -q "portainer"; then
+        print_menu
+        msg success "Portainer successfully installed and running\n"
+    else
+        print_menu
+        msg error "Portainer container failed to start\n"
+    fi
+}
+
 ###   FULL INSTALLER   ###
 additional_applications() {
     PS3='Select additional applications to install: '
