@@ -637,6 +637,8 @@ install_adguard() {
     restart: unless-stopped
     networks:
         - homenet
+	dockervlan:
+      ipv4_address: 192.168.1.51   # IP address inside the defined range
 
 EOL
         msg success "AdGuard configuration added to docker-compose.yaml"
@@ -836,6 +838,16 @@ networks:
     driver: bridge
   autonet:
     driver: bridge
+  servervlan:
+    name: servervlan
+    driver: macvlan
+    driver_opts:
+      parent: eth1                       # using ifconfig
+    ipam:
+      config:
+        - subnet: "192.168.1.0/24"
+          ip_range: "192.168.1.50/29"   # VLAN for IPS 200 - 205
+          gateway: "192.168.1.1"
 
 services:
 
