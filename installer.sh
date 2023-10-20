@@ -42,17 +42,18 @@ msg() {
 
 ###   STARTUP   ###
 startup() {
+    ###   CHECK SUDO
+    if [[ $EUID -ne 0 ]]; then
+        msg error "Please run this script with sudo or as root."
+        exit 1
+    fi
+
     ###  Generate Files
     if [[ ! -d /logs ]]; then
         mkdir -p /logs
     fi
 
     sudo apt install -y net-tools
-
-    if [[ $EUID -ne 0 ]]; then
-        msg error "Please run this script with sudo or as root."
-        exit 1
-    fi
 
     ###  UPDATE SYSTEM
     while true; do
