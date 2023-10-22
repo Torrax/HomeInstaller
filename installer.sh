@@ -187,7 +187,7 @@ EOL
     sudo chown -R 1000:1000 /opt/node-red/config
     		
     if docker ps | grep -q "nodered"; then
-    
+        prep_nodered
         print_menu
         msg success "Node-RED successfully installed and running"
 	msg info "http://localhost:1880\n"
