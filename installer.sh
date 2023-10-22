@@ -610,10 +610,6 @@ entryPoints:
     address: :80
   websecure:
     address: :443
-  # -- (Optional) Add custom Entrypoint
-  # custom:
-  #   address: :8080
-
 
 ## Dashboard  (Don't enable in production)
 # api: 
