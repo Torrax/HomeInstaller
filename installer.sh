@@ -473,9 +473,11 @@ install_apache() {
     image: httpd:latest
     container_name: apache
     ports:
-    - '880:880'
+      - '880:880'
     volumes:
-    - /opt/apache/website:/usr/local/apache2/htdocs
+      - /opt/apache/website:/usr/local/apache2/htdocs
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - homenet
 
@@ -523,6 +525,8 @@ install_duckdns() {
       - TOKEN=$token
     volumes:
       - /opt/duckdns:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
     networks:
         - homenet
@@ -561,6 +565,8 @@ install_wireguard() {
     volumes:
         - /opt/wireguard:/config
         - /lib/modules:/lib/modules:ro
+	- /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
     ports:
         - "51820:51820/udp"
     sysctls:
@@ -608,6 +614,12 @@ global:
 entryPoints:
   web:
     address: :80
+    # -- (Optional) Redirect all HTTP to HTTPS
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
   websecure:
     address: :443
 
@@ -656,6 +668,8 @@ EOL
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /opt/traefik:/etc/traefik
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - homenet
       
@@ -675,6 +689,51 @@ EOL
     fi
 }
 
+
+### PI HOLE INSTALLER ###
+install_pihole() {
+    check_docker
+    clear
+    msg info "Installing Pi Hole..."
+    if ! grep -q "pihole:" /opt/docker-compose.yaml; then
+        cat << EOL >> /opt/docker-compose.yaml
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    network_mode: host
+    volumes:
+      - /opt/pihole:/etc/pihole
+      - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    restart: unless-stopped
+
+EOL
+        msg success "Pi Hole configuration added to docker-compose.yaml"
+    else
+        msg warning "Pi Hole entry already exists in docker-compose.yaml"
+    fi
+
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
+    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
+    sudo systemctl stop systemd-resolved                # This will require a reboot
+
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+    
+    if docker ps | grep -q "adguard"; then
+        print_menu
+        msg success "Pi Hole successfully installed and running"
+	msg info "http://localhost:800\n"
+    else
+        print_menu
+        msg error "AdGuard container failed to start\n"
+    fi
+}
+
+
+
+
 ### ADGUARD INSTALLER ###
 install_adguard() {
     check_docker
@@ -688,7 +747,8 @@ install_adguard() {
     volumes:
         - /opt/adguard/work:/opt/adguardhome/work
         - /opt/adguard/conf:/opt/adguardhome/conf
-#	- /opt/shared/certs/example.com:/certs # optional: if you have your own SSL cert
+	- /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
     ports:
         - "53:53/tcp"
         - "53:53/udp"
