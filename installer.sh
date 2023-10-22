@@ -660,6 +660,7 @@ install_adguard() {
     restart: unless-stopped
     networks:
         - homenet
+        - worldnet
 
 EOL
         msg success "AdGuard configuration added to docker-compose.yaml"
@@ -882,6 +883,8 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
+  worldnet:
+    driver: host
 
 services:
 
