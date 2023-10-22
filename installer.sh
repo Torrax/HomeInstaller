@@ -668,6 +668,11 @@ EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
+    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
+    sudo systemctl stop systemd-resolved                # This will require a reboot
+
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
     prep_adguard
     
     if docker ps | grep -q "adguard"; then
@@ -881,8 +886,6 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
-  worldnet:
-    driver: host
 
 services:
 
