@@ -649,11 +649,11 @@ install_adguard() {
         - /opt/adguard/conf:/opt/adguardhome/conf
 #	- /opt/shared/certs/example.com:/certs # optional: if you have your own SSL cert
     ports:
-        - "53:53/tcp"
-        - "53:53/udp"
+        - "530:53/tcp"
+        - "530:53/udp"
         - "67:67/udp"
         - "68:68/tcp"
-        - "800:800/tcp"
+        - "800:80/tcp"
         - "443:443/tcp"
         - "853:853/tcp"
         - "3000:3000/tcp" # For Initial Setup
@@ -669,10 +669,8 @@ EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
-    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
-    sudo systemctl stop systemd-resolved                # This will require a reboot
+    prep_adguard
     
-    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
     if docker ps | grep -q "adguard"; then
         print_menu
         msg success "AdGuard successfully installed and running"
@@ -681,6 +679,24 @@ EOL
         print_menu
         msg error "AdGuard container failed to start\n"
     fi
+}
+
+### ADGUARD PREP ###
+prep_adguard() {
+    msg info "Web UI for AdGuard Startup Will Now Open"
+    echo "Enter Port: 800"
+    echo "Enter Port: 530"
+    echo "Press any key to confirm"
+    read -n1 -s
+    xdg-open "http://localhost:3000"
+
+    # Wait for a specific file to appear
+    while [[ ! -f /path/to/specific/file ]]; do
+        sleep 3
+    done
+
+    # Continue with the rest of your script
+    msg success "Setup Complete, continuing..."
 }
 
 ###   NUT INSTALLER   ###
