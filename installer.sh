@@ -642,9 +642,6 @@ providers:
   docker:
     # -- (Optional) Enable this, if you want to expose all containers automatically
     exposedByDefault: false
-  file:
-    directory: /etc/traefik
-    watch: true
 EOL
     else
         msg info "Configuration file already exists, skipping..."
