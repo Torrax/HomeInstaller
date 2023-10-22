@@ -692,6 +692,7 @@ prep_adguard() {
     echo "Enter Web Interface Port: 800"
     echo "Leave DNS Port: 53"
     echo "URL: http://localhost:3000"
+    python -m webbrowser "https://localhost:3000"
     echo "Press any key to continue."
     read -n1 -s
     echo "Waiting for Web Setup to Complete"
@@ -931,6 +932,7 @@ EOL
     if docker ps | grep -q "portainer"; then
         print_menu
         msg success "Portainer successfully installed and running"
+	python -m webbrowser "https://localhost:9443"
 	msg info "https://localhost:9443\n"
     else
         print_menu
