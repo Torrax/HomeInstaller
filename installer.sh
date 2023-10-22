@@ -683,12 +683,14 @@ EOL
 
 ### ADGUARD PREP ###
 prep_adguard() {
+    clear
     msg info "Web UI for AdGuard Startup Will Now Open"
     echo "Enter Port: 800"
     echo "Enter Port: 530"
-    echo "Press any key to confirm"
+    echo "URL: http://localhost:3000"
+    echo "Press any key to continue."
     read -n1 -s
-    xdg-open "http://localhost:3000"
+    echo "Waiting for Web Setup to Complete"
 
     # Wait for a specific file to appear
     while [[ ! -f /path/to/specific/file ]]; do
