@@ -129,8 +129,8 @@ install_homeassistant() {
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     ports:
-      - "80:8123"
-    restart: unless-stopped
+      - "8123:8123"
+    restart: always
     privileged: true
     networks:
       - homenet
@@ -212,6 +212,7 @@ install_mosquitto() {
   mosquitto:
     container_name: mosquitto
     image: "eclipse-mosquitto"
+    restart: always
     ports:
         - "1883:1883"
         - "9001:9001"
@@ -226,7 +227,7 @@ EOL
     fi
 
     if [[ ! -s /opt/mosquitto/config/mosquitto.conf ]]; then
-        sudo mkdir /opt/mosquitto | sudo mkdir /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
+        sudo mkdir -p /opt/mosquitto | sudo mkdir -p /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
     
         cat << EOL >> /opt/mosquitto/config/mosquitto.conf
 persistence true
@@ -296,9 +297,9 @@ install_lms() {
     container_name: lms
     image: lmscommunity/logitechmediaserver
     volumes:
-      - /opt/lms/config:/config:rw
+      - /opt/lms/config:/config
       - /home/$(whoami)/Music:/music:ro
-      - /home/$(whoami)/Music/playlists:/playlist:rw
+      - /home/$(whoami)/Music/playlists:/playlist
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
   #  devices:
@@ -308,7 +309,7 @@ install_lms() {
       - 9090:9090/tcp
       - 3483:3483/tcp
       - 3483:3483/udp
-    restart: always
+    restart: unless-stopped
     networks:
       - homenet
 
@@ -472,7 +473,7 @@ install_apache() {
     image: httpd:latest
     container_name: apache
     ports:
-    - '8080:8080'
+    - '880:880'
     volumes:
     - /opt/apache/website:/usr/local/apache2/htdocs
     networks:
@@ -489,7 +490,7 @@ EOL
     if docker ps | grep -q "apache"; then
         print_menu
         msg success "Apache Web Server successfully installed and running"
-	msg info "http://localhost:8080\n"
+	msg info "http://localhost:880\n"
 	else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
@@ -559,7 +560,7 @@ install_wireguard() {
         - PGID=998
     volumes:
         - /opt/wireguard:/config
-        - /lib/modules:/lib/modules
+        - /lib/modules:/lib/modules:ro
     ports:
         - "51820:51820/udp"
     sysctls:
@@ -588,6 +589,68 @@ install_traefik() {
     check_docker
     clear
     msg info "Installing Traefik..."
+    
+    ###   Set Config File
+    if [[ ! -s /opt/traefik/traefik.yaml ]]; then
+        sudo mkdir -p /opt/traefik | sudo touch /opt/traefik/traefik.yaml
+
+	# Prompt the user to enter a name for the device
+	msg info "\nEnter E-mail for SSL Certificates: "
+	read -r email
+    
+        cat << EOL >> /opt/traefik/traefik.yaml
+## General
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+## Ports
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+  # -- (Optional) Add custom Entrypoint
+  # custom:
+  #   address: :8080
+
+
+## Dashboard  (Don't enable in production)
+# api: 
+#   dashboard: true
+#   insecure: true
+
+## SSL Certs
+certificatesResolvers:
+  staging:
+    acme:
+      email: $email
+      storage: /etc/traefik/certs/acme.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+  production:
+    acme:
+      email: $email
+      storage: /etc/traefik/certs/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+
+## Docker Setup
+providers:
+  docker:
+    # -- (Optional) Enable this, if you want to expose all containers automatically
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik
+    watch: true
+EOL
+    else
+        msg info "Configuration file already exists, skipping..."
+    fi
+    
+    ###   Install Container
     if ! grep -q "traefik:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
   traefik:
@@ -596,27 +659,12 @@ install_traefik() {
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"   # Dashboard (Disable in Production)
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /opt/traefik:/etc/traefik
     networks:
       - homenet
-    labels:
-      - "traefik.enable=true"                                                                       # Enable Traefik for this container
-#      - "traefik.http.routers.traefik.entrypoints=http"                                             # Specify HTTP entrypoint
-#      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.com`)"             # Set rule for router
-#      - "traefik.http.middlewares.traefik-auth.basicauth.users=USER:BASIC_AUTH_PASSWORD"            # Basic authentication
-#      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"               # HTTPS redirect
-#      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"   # Set header for SSL
-#      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"                           # Apply HTTPS redirect middleware
-#      - "traefik.http.routers.traefik-secure.entrypoints=https"                                     # Specify HTTPS entrypoint
-#      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.com`)"      # Set rule for secure router
-#      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"                              # Apply auth middleware
-#      - "traefik.http.routers.traefik-secure.tls=true"                                              # Enable TLS
-#      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"                           # Set certificate resolver
-#      - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.com"                 # Set main domain for TLS
-#      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.com"               # Set SANs for TLS
-#      - "traefik.http.routers.traefik-secure.service=api@internal"                                  # Set service for secure router
       
 EOL
         msg success "Traefik configuration added to docker-compose.yaml"
