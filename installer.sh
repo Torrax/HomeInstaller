@@ -649,8 +649,8 @@ install_adguard() {
         - /opt/adguard/conf:/opt/adguardhome/conf
 #	- /opt/shared/certs/example.com:/certs # optional: if you have your own SSL cert
     ports:
-        - "530:53/tcp"
-        - "530:53/udp"
+        - "53:53/tcp"
+        - "53:53/udp"
         - "67:67/udp"
         - "68:68/tcp"
         - "800:80/tcp"
@@ -658,9 +658,7 @@ install_adguard() {
         - "853:853/tcp"
         - "3000:3000/tcp" # For Initial Setup
     restart: unless-stopped
-    networks:
-        - homenet
-        - worldnet
+    network_mode: host
 
 EOL
         msg success "AdGuard configuration added to docker-compose.yaml"
@@ -687,14 +685,14 @@ prep_adguard() {
     clear
     msg info "Web UI for AdGuard Startup Will Now Open"
     echo "Enter Web Interface Port: 800"
-    echo "Enter DNS Port: 530"
+    echo "Leave DNS Port: 53"
     echo "URL: http://localhost:3000"
     echo "Press any key to continue."
     read -n1 -s
     echo "Waiting for Web Setup to Complete"
 
     # Wait for a specific file to appear
-    while [[ ! -f /path/to/specific/file ]]; do
+    while [[ ! -f /opt/adguard/config/AdGuardHome.yaml ]]; do
         sleep 3
     done
 
