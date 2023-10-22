@@ -504,11 +504,11 @@ install_duckdns() {
     if ! grep -q "duckdns:" /opt/docker-compose.yaml; then
     
 	# Prompt the user to enter a name for the device
-	msg info -n "Enter Subdomain: (_____.duckdns.com)"
+	msg info "Enter Subdomain: (_____.duckdns.com)"
 	read -r subdomain
 
  	# Prompt the user to enter a name for the device
-	msg info -n "Enter Token: "
+	msg info "Enter Token: "
 	read -r token
     
         cat << EOL >> /opt/docker-compose.yaml
@@ -518,8 +518,8 @@ install_duckdns() {
     environment:
       - PUID=999
       - PGID=999
-      - SUBDOMAINS=\"$subdomain\"
-      - TOKEN=\"$token\"
+      - SUBDOMAINS=$subdomain
+      - TOKEN=$token
     volumes:
       - /opt/duckdns:/config
     restart: unless-stopped
