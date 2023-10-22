@@ -198,8 +198,8 @@ EOL
 }
 
 prep_nodered(){
-     docker exec -it mosquitto "npm install node-red-contrib-home-assistant-websocket"
-     docker restart mosquitto
+     docker exec -it nodered npm install node-red-contrib-home-assistant-websocket
+     docker restart nodered
 }
 
 ### MOSQUITTO MQTT INSTALLER ###
