@@ -685,8 +685,8 @@ EOL
 prep_adguard() {
     clear
     msg info "Web UI for AdGuard Startup Will Now Open"
-    echo "Enter Port: 800"
-    echo "Enter Port: 530"
+    echo "Enter Web Interface Port: 800"
+    echo "Enter DNS Port: 530"
     echo "URL: http://localhost:3000"
     echo "Press any key to continue."
     read -n1 -s
