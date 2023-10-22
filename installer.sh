@@ -717,94 +717,26 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
     sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
-    sudo systemctl stop systemd-resolved                # This will require a reboot
+    sudo systemctl stop systemd-resolved
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
+    docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
+
+    grep "adblock" myfile.txt
+
+    if [ $? -ne 0 ]; then
+        echo "$(hostname).local            adblock.lan" >> /etc/hosts
+    fi
     
-    if docker ps | grep -q "adguard"; then
+    if docker ps | grep -q "pihole"; then
         print_menu
         msg success "Pi Hole successfully installed and running"
-	msg info "http://localhost:800\n"
+	msg info "http://localhost/admin\n"
     else
         print_menu
-        msg error "AdGuard container failed to start\n"
+        msg error "Pi Hole container failed to start\n"
     fi
-}
-
-
-
-
-### ADGUARD INSTALLER ###
-install_adguard() {
-    check_docker
-    clear
-    msg info "Installing AdGuard..."
-    if ! grep -q "adguard:" /opt/docker-compose.yaml; then
-        cat << EOL >> /opt/docker-compose.yaml
-  adguard:
-    container_name: adguard
-    image: "adguard/adguardhome"
-    volumes:
-        - /opt/adguard/work:/opt/adguardhome/work
-        - /opt/adguard/conf:/opt/adguardhome/conf
-	- /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-    ports:
-        - "53:53/tcp"
-        - "53:53/udp"
-        - "67:67/udp"
-        - "68:68/tcp"
-        - "800:80/tcp"
-        - "443:443/tcp"
-        - "853:853/tcp"
-        - "3000:3000/tcp" # For Initial Setup
-    restart: unless-stopped
-    network_mode: host
-
-EOL
-        msg success "AdGuard configuration added to docker-compose.yaml"
-    else
-        msg warning "AdGuard entry already exists in docker-compose.yaml"
-    fi
-
-    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
-    sudo systemctl stop systemd-resolved                # This will require a reboot
-
-    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    prep_adguard
-    
-    if docker ps | grep -q "adguard"; then
-        print_menu
-        msg success "AdGuard successfully installed and running"
-	msg info "http://localhost:800\n"
-    else
-        print_menu
-        msg error "AdGuard container failed to start\n"
-    fi
-}
-
-### ADGUARD PREP ###
-prep_adguard() {
-    clear
-    msg info "Web UI for AdGuard Startup Will Now Open"
-    echo "Enter Web Interface Port: 800"
-    echo "Leave DNS Port: 53"
-    echo "URL: http://localhost:3000"
-    python3 -m webbrowser "https://localhost:3000"
-    echo "Press any key to continue."
-    read -n1 -s
-    echo "Waiting for Web Setup to Complete"
-
-    # Wait for a specific file to appear
-    while [[ ! -f /opt/adguard/config/AdGuardHome.yaml ]]; do
-        sleep 3
-    done
-
-    # Continue with the rest of your script
-    msg success "Setup Complete, continuing..."
 }
 
 ###   NUT INSTALLER   ###
@@ -1329,7 +1261,7 @@ install_security() {
 ###   NETWORK   ###
 install_network() {
     PS3='Select Application for Download: '
-    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "AdGuard" "Traefik" "Back")
+    network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "Pi Hole" "Traefik" "Back")
     select network_opt in "${network_options[@]}"
     do
         case $REPLY in
@@ -1345,8 +1277,8 @@ install_network() {
             4)  ###   WIREGUARD SERVER
                 install_wireguard
     		;;
-            5)  ###   ADGUARD SERVER
-                install_adguard
+            5)  ###   PI HOLE SERVER
+                install_pihole
     		;;
             6) ###   TRAEFIK
                 install_traefik
