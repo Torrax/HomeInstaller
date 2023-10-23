@@ -738,13 +738,7 @@ install_pihole() {
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    networks:
-        worldnet:
-          ipv4_address: 192.168.1.45
-    ports:
-      - "80:80/udp"
-      - "53:53/tcp"
-      - "53:53/udp"
+    network_mode: host
     volumes:
       - /opt/pihole:/etc/pihole
       - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
@@ -770,6 +764,8 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
     docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
+    docker exec -it pihole sed -ie "s/= 80/= 8093/g" /etc/lighttpd/lighttpd.conf # Change Web UI Port
+    docker restart pihole    
     
     if docker ps | grep -q "pihole"; then
         print_menu
