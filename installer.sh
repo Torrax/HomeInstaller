@@ -630,7 +630,8 @@ install_traefik() {
     
     ###   Set Config File
     if [[ ! -s /opt/traefik/traefik.yaml ]]; then
-        sudo mkdir -p /opt/traefik | sudo touch /opt/traefik/traefik.yaml
+        sudo mkdir -p /opt/traefik
+	sudo touch /opt/traefik/traefik.yaml
 
 	# Prompt the user to enter a name for the device
 	msg info "\nEnter E-mail for SSL Certificates: "
@@ -752,10 +753,14 @@ EOL
         msg warning "Pi Hole entry already exists in docker-compose.yaml"
     fi
 
-    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+    ###   Set Config File
+    if [[ ! -s /opt/pihole/custom.list ]]; then
+	sudo touch /opt/pihole/custom.list
+        cat << EOL >> /opt/pihole/custom.list
+### Server DNS Rewrites
+127.0.0.1    local.com
 
-#    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
-#    sudo systemctl stop systemd-resolved
+EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
