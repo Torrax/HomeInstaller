@@ -732,7 +732,8 @@ install_pihole() {
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    network_mode: host
+    networks:
+      - worldnet
     volumes:
       - /opt/pihole:/etc/pihole
       - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
@@ -752,14 +753,12 @@ EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
-    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
-    sudo systemctl stop systemd-resolved
+#    sudo systemctl disable systemd-resolved.service     # Disable DNS Service on Port 53
+#    sudo systemctl stop systemd-resolved
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
-#    docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
-#    docker exec -it pihole sed -ie "s/= 80/= 8093/g" /etc/lighttpd/lighttpd.conf # Change Web UI Port
-#    docker restart pihole    
+    docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
     
     if docker ps | grep -q "pihole"; then
         print_menu
@@ -955,13 +954,12 @@ networks:
   worldnet:
     driver: macvlan
     driver_opts:
-      parent: enp0s8
-      macvlan_mode: bridge
+      parent: enp1s0
     ipam:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
-	  ip_range: 192.168.1.45/32
+	  ip_range: 192.168.1.45/29    # Reserve 5 IPS Starting at this IP
 
 services:
 
