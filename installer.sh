@@ -142,11 +142,17 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-            
+
+    grep "home.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:8123             home.local" >> /etc/hosts
+    fi
+     
     if docker ps | grep -q "homeassistant"; then
         print_menu
         msg success "Home Assistant successfully installed and running"
-	msg info "http://localhost:80\n"
+	msg info "URL: home.local\n"
     else
         print_menu
         msg error "Home Assistant container failed to start\n"
@@ -185,12 +191,18 @@ EOL
     		
     # Set same user as Node Red to allow permissions on shared volume.
     sudo chown -R 1000:1000 /opt/node-red/config
-    		
+
+    grep "nodered.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:1880            nodered.local" >> /etc/hosts
+    fi
+    
     if docker ps | grep -q "nodered"; then
         prep_nodered
         print_menu
         msg success "Node-RED successfully installed and running"
-	msg info "http://localhost:1880\n"
+	msg info "URL: nodered.local\n"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -243,10 +255,10 @@ EOL
     fi
     
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+    
     if docker ps | grep -q "mosquitto"; then
         print_menu
         msg success "Mosquitto successfully installed and running"
-	msg info "http://localhost:1883\n"
     else
         print_menu
         msg error "Mosquitto container failed to start\n"
@@ -274,11 +286,19 @@ EOL
     else
         msg warning "Kuma entry already exists in docker-compose.yaml"
     fi
+    
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
+    grep "kuma.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:3001              kuma.local" >> /etc/hosts
+    fi
+    
     if docker ps | grep -q "kuma"; then
         print_menu
         msg success "Kuma successfully installed and running"
-	msg info "http://localhost:3001\n"
+	msg info "URL: kuma.local\n"
     else
         print_menu
         msg error "Kuma container failed to start\n"
@@ -320,11 +340,17 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-            
+
+    grep "music.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:3001              music.local" >> /etc/hosts
+    fi
+     
     if docker ps | grep -q "logitechmediaserver"; then
         print_menu
         msg success "Logitech Media Server successfully installed and running"
-	msg info "http://localhost:9000\n"
+	msg info "URL: music.local\n"
     else
         print_menu
         msg error "Logitech Media Server container failed to start\n"
@@ -375,11 +401,17 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-            
+
+    grep "nvr.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:5000              nvr.local" >> /etc/hosts
+    fi
+    
     if docker ps | grep -q "frigate"; then
         print_menu
         msg success "Frigate NVR successfully installed and running"
-	msg info "http://localhost:5000\n"
+	msg info "URL: nvr.local\n"
     else
         print_menu
         msg error "Frigate NVR container failed to start\n"
@@ -488,11 +520,17 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-    		
+
+    grep "web.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:880              web.local" >> /etc/hosts
+    fi
+    
     if docker ps | grep -q "apache"; then
         print_menu
         msg success "Apache Web Server successfully installed and running"
-	msg info "http://localhost:880\n"
+	msg info "URL: web.local\n"
 	else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
@@ -723,16 +761,16 @@ EOL
 
     docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
 
-    grep "adblock" myfile.txt
+    grep "adblock" /etc/hosts
 
     if [ $? -ne 0 ]; then
-        echo "$(hostname).local            adblock.lan" >> /etc/hosts
+        echo "127.0.0.1:80              adblock.local" >> /etc/hosts
     fi
     
     if docker ps | grep -q "pihole"; then
         print_menu
         msg success "Pi Hole successfully installed and running"
-	msg info "http://localhost/admin\n"
+	msg info "URL: adblock.local\n"
     else
         print_menu
         msg error "Pi Hole container failed to start\n"
@@ -961,12 +999,18 @@ EOL
     fi
     
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
+    grep "docker.local" /etc/hosts
+
+    if [ $? -ne 0 ]; then
+        echo "127.0.0.1:9443              docker.local" >> /etc/hosts
+    fi
     
     if docker ps | grep -q "portainer"; then
         print_menu
         msg success "Portainer successfully installed and running"
 	python3 -m webbrowser "https://localhost:9443"
-	msg info "https://localhost:9443\n"
+	msg info "docker.local\n"
     else
         print_menu
         msg error "Portainer container failed to start\n"
