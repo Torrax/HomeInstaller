@@ -738,8 +738,11 @@ install_pihole() {
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    networks:
+        my_macvlan_network:
+          ipv4_address: 192.168.1.45
     ports:
-      - "800:80/udp"
+      - "80:80/udp"
       - "53:53/tcp"
       - "53:53/udp"
     volumes:
@@ -959,6 +962,14 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
+  worldnet:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
 
 services:
 
