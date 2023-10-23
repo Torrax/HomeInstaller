@@ -748,6 +748,10 @@ install_pihole() {
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.http.routers.adblock.entrypoints: web
+      traefik.http.routers.adblock.rule: Host('adblock.local')
 
 EOL
         msg success "Pi Hole configuration added to docker-compose.yaml"
