@@ -738,7 +738,10 @@ install_pihole() {
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    network_mode: host
+    ports:
+      - "800:80/udp"
+      - "53:53/tcp"
+      - "53:53/udp"
     volumes:
       - /opt/pihole:/etc/pihole
       - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
@@ -760,12 +763,6 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
     docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
-
-    grep "adblock" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:80              adblock.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "pihole"; then
         print_menu
