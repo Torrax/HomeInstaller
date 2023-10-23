@@ -179,7 +179,8 @@ install_nodered() {
     user: 1000:1000
     restart: always
     networks:
-      - homenet
+      worldnet:
+        ipv4_address: 192.168.1.45
 
 EOL
         msg success "Node-RED configuration added to docker-compose.yaml"
@@ -191,18 +192,11 @@ EOL
     		
     # Set same user as Node Red to allow permissions on shared volume.
     sudo chown -R 1000:1000 /opt/node-red/config
-
-    grep "nodered.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:1880            nodered.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "nodered"; then
         prep_nodered
         print_menu
         msg success "Node-RED successfully installed and running"
-	msg info "URL: nodered.local\n"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -763,9 +757,9 @@ EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
-    docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
-    docker exec -it pihole sed -ie "s/= 80/= 8093/g" /etc/lighttpd/lighttpd.conf # Change Web UI Port
-    docker restart pihole    
+#    docker exec -it pihole /usr/local/bin/pihole -a -p  # Set password for system
+#    docker exec -it pihole sed -ie "s/= 80/= 8093/g" /etc/lighttpd/lighttpd.conf # Change Web UI Port
+#    docker restart pihole    
     
     if docker ps | grep -q "pihole"; then
         print_menu
@@ -961,11 +955,13 @@ networks:
   worldnet:
     driver: macvlan
     driver_opts:
-      parent: eth0
+      parent: enp0s8
+      macvlan_mode: bridge
     ipam:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
+	  ip_range: 192.168.1.45/32
 
 services:
 
