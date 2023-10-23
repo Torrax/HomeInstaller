@@ -734,6 +734,7 @@ install_pihole() {
     image: pihole/pihole:latest
     networks:
       - worldnet
+      - homenet
     volumes:
       - /opt/pihole:/etc/pihole
       - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
