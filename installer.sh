@@ -739,7 +739,7 @@ install_pihole() {
     container_name: pihole
     image: pihole/pihole:latest
     networks:
-        my_macvlan_network:
+        worldnet:
           ipv4_address: 192.168.1.45
     ports:
       - "80:80/udp"
