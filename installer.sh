@@ -645,23 +645,24 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 
-## Ports
-entryPoints:
-  web:
-    address: :80
-    ###  Redirect all HTTP to HTTPS
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-  websecure:
-    address: :443
-
 ## Dashboard  (Don't enable in production)
 # api: 
 #   dashboard: true
 #   insecure: true
+
+## Ports
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+http:
+  middlewares:
+    redirect-https:
+      redirectScheme:
+        scheme: "https"
+        permanent: true
 
 ## SSL Certs
 certificatesResolvers:
@@ -757,7 +758,8 @@ install_pihole() {
       traefik.http.services.piholeweb.loadbalancer.server.port: 80
       traefik.http.routers.piholeweb.service: piholeweb
       traefik.http.routers.piholeweb.entrypoints: web, websecure
-      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`)     
+      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`)
+      traefik.http.routers.piholeweb.middlewares: redirect-https
       traefik.http.routers.piholeweb.tls: true
       traefik.http.routers.piholeweb.tls.certresolver: production
 
