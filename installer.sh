@@ -744,8 +744,12 @@ install_pihole() {
     restart: unless-stopped
     labels:
       traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      traefik.http.services.adblock.loadbalancer.server.port: 80
       traefik.http.routers.adblock.entrypoints: web
       traefik.http.routers.adblock.rule: Host('adblock.local')
+      
+      
 
 EOL
         msg success "Pi Hole configuration added to docker-compose.yaml"
@@ -758,8 +762,10 @@ EOL
 	sudo touch /opt/pihole/custom.list
         cat << EOL >> /opt/pihole/custom.list
 ### Server DNS Rewrites
-127.0.0.1    local.com
-
+192.168.1.111          adblock.local ################################################################################        GENERATE IP
+192.168.1.111          home.local ################################################################################        GENERATE IP
+192.168.1.111          nvr.local ################################################################################        GENERATE IP
+192.168.1.111          music.local ################################################################################        GENERATE IP
 EOL
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
@@ -965,7 +971,7 @@ networks:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
-	  ip_range: 192.168.1.45/29    # Reserve 5 IPS Starting at this IP
+	  ip_range: 192.168.1.45/32    # Reserve 1 IPS Ending at this IP
 
 services:
 
@@ -993,6 +999,8 @@ install_portainer() {
         cat << EOL >> /opt/docker-compose.yaml
   portainer:
     image: portainer/portainer-ce:latest
+    networks:
+      - homenet
     ports:
       - 9443:9443
     volumes:
