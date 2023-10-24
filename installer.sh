@@ -1,10 +1,26 @@
 #!/bin/bash
 
-##########################################
-###             FUNCTIONS              ###
-##########################################
+###############################################################################################################
+###                                             FUNCTIONS                                                    ##
+###############################################################################################################
 
-###   PRINT MENU   ###
+# --------------------          MESSAGE SYSTEM          -------------------- #
+msg() {
+    local type="$1"
+    local message="$2"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo -e "$timestamp [$type] $message" >> /logs/script.log
+
+    case "$type" in
+        success) echo -e "\e[32m$message\e[0m" ;;
+        error) echo -e "\e[31m$message\e[0m" ;;
+        warning) echo -e "\e[33m$message\e[0m" ;;
+        info) echo -e "\e[34m$message\e[0m" ;;
+        *) echo "$message" ;;
+    esac
+}
+
+# --------------------          PRINT MENU          -------------------- #
 print_menu() {
     clear
     cat << "EOF"
@@ -24,23 +40,7 @@ print_menu() {
 EOF
 }
 
-###   ERROR MESSENGER   ###
-msg() {
-    local type="$1"
-    local message="$2"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo -e "$timestamp [$type] $message" >> /logs/script.log
-
-    case "$type" in
-        success) echo -e "\e[32m$message\e[0m" ;;
-        error) echo -e "\e[31m$message\e[0m" ;;
-        warning) echo -e "\e[33m$message\e[0m" ;;
-        info) echo -e "\e[34m$message\e[0m" ;;
-        *) echo "$message" ;;
-    esac
-}
-
-###   STARTUP   ###
+# --------------------          STARTUP          -------------------- #
 startup() {
     ###   CHECK SUDO
     if [[ $EUID -ne 0 ]]; then
@@ -82,7 +82,7 @@ startup() {
     done
 }
 
-###   SHUTDOWN   ###
+# --------------------          SHUTDOWN          -------------------- #
 shutdown() {
     msg info "Cleaning up..."
     sudo apt-get autoclean
@@ -108,11 +108,12 @@ shutdown() {
     done
 }
 
-##########################################
-###             INSTALLERS             ###
-##########################################
 
-###   HOME ASSISTANT INSTALLER   ###
+###############################################################################################################
+###                                             INSTALLERS                                                   ##
+###############################################################################################################
+
+# --------------------          HOME ASSISTANT INSTALL          -------------------- #
 install_homeassistant() {
     check_docker
     clear
@@ -159,7 +160,7 @@ EOL
     fi
 }
 
-###   NODE RED INSTALLER   ###
+# --------------------          NODE RED INSTALL          -------------------- #
 install_nodered() {
     check_docker
     clear
@@ -208,7 +209,7 @@ prep_nodered(){
      docker restart nodered
 }
 
-### MOSQUITTO MQTT INSTALLER ###
+# --------------------          MOSQUITTO INSTALL          -------------------- #
 install_mosquitto() {
     check_docker
     clear
@@ -261,7 +262,7 @@ EOL
     fi
 }
 
-### KUMA UPTIME INSTALLER ###
+# --------------------          KUMA UPTIME INSTALL          -------------------- #
 install_kuma() {
     check_docker
     clear
@@ -301,7 +302,7 @@ EOL
     fi
 }
 
-###   LOGITECH MEDIA SERVER INSTALLER   ###
+# --------------------          LOGITCH MEDIA SERVER INSTALL          -------------------- #
 install_lms() {
     check_docker
     clear
@@ -353,7 +354,7 @@ EOL
     fi
 }
 
-###   FRIGATE INSTALLER   ###
+# --------------------          FIRGATE INSTALL          -------------------- #
 install_frigate() {
     check_docker
     clear
@@ -414,12 +415,7 @@ EOL
     fi
 }
 
-###   WEB RTC INSTALLER   ###
-#install_webRTC() {
-    # Script to install Web RTC
-#}
-
-###   CLOUDFLARED INSTALLER   ###
+# --------------------          CLOUDFLARED INSTALL          -------------------- #
 install_cloudflared() {
     clear
     msg info "Installing Cloudflared..."
@@ -489,7 +485,7 @@ EOL
 	fi
 }
 
-###   APACHE WEB SERVER INSTALLER   ###
+# --------------------          APACHE INSTALL          -------------------- #
 install_apache() {
     check_docker
     clear
@@ -533,7 +529,7 @@ EOL
 	fi
 }
 
-### DUCKDNS INSTALLER ###
+# --------------------          DUCKDNS INSTALL          -------------------- #
 install_duckdns() {
     check_docker
     clear
@@ -580,7 +576,7 @@ EOL
     fi
 }
 
-### WIREGUARD INSTALLER ###
+# --------------------          WIREGUARD INSTALL          -------------------- #
 install_wireguard() {
     check_docker
     clear
@@ -624,7 +620,7 @@ EOL
     fi
 }
 
-### TRAEFIK INSTALLER ###
+# --------------------          TRAEFIK INSTALL          -------------------- #
 install_traefik() {
     check_docker
     clear
@@ -719,7 +715,8 @@ EOL
     if docker ps | grep -q "traefik"; then
         print_menu
         msg success "Traefik successfully installed and running"
-	msg info "http://localhost:80\n"
+	msg info "http://localhost:8080"
+	msg info "Note you will need to allow the dashboard in /opt/traefik/traefik.yaml\n"
     else
         print_menu
         msg error "Traefik container failed to start\n"
@@ -727,7 +724,7 @@ EOL
 }
 
 
-### PI HOLE INSTALLER ###
+# --------------------          PI HOLE INSTALL          -------------------- #
 install_pihole() {
     check_docker
     clear
@@ -758,7 +755,7 @@ install_pihole() {
       traefik.http.services.piholeweb.loadbalancer.server.port: 80
       traefik.http.routers.piholeweb.service: piholeweb
       traefik.http.routers.piholeweb.entrypoints: web, websecure
-      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`)
+      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.piholeweb.middlewares: redirect-https
       traefik.http.routers.piholeweb.tls: true
       traefik.http.routers.piholeweb.tls.certresolver: production
@@ -776,6 +773,7 @@ EOL
         cat << EOL >> /opt/pihole/custom.list
 ### Server DNS Rewrites
 192.168.1.111          adblock.local ################################################################################        GENERATE IP
+192.168.1.111          traefik.local ################################################################################        GENERATE IP
 192.168.1.111          docker.local ################################################################################        GENERATE IP
 192.168.1.111          home.local ################################################################################        GENERATE IP
 192.168.1.111          nvr.local ################################################################################        GENERATE IP
@@ -793,14 +791,21 @@ EOL
     if docker ps | grep -q "pihole"; then
         print_menu
         msg success "Pi Hole successfully installed and running"
-	msg info "URL: adblock.local\n"
+
+	ping -c 4 adblock.local > /dev/null 2>&1
+ 
+	if [ $? -eq 0 ]; then
+            msg info "URL: adblock.local\n"
+        else
+            msg info "URL: 127.0.0.1:80\n"
+        fi
     else
         print_menu
         msg error "Pi Hole container failed to start\n"
     fi
 }
 
-###   NUT INSTALLER   ###
+# --------------------          NUT INSTALL          -------------------- #
 install_NUT() {
     clear
     msg info "Installing Nut..."
@@ -886,32 +891,28 @@ install_NUT() {
     		
     if docker ps | grep -q "apache"; then
         print_menu
-        msg success "NUT Server successfully installed and running\n"
+            msg success "NUT Server successfully installed and running\n"
 	else
-        print_menu
-		msg error "NUT Server failed to start\n"
+            print_menu
+	    msg error "NUT Server failed to start\n"
 	fi
 }
 
-###   FTP INSTALLER   ###
+# --------------------          FTP INSTALL          -------------------- #
 install_FTP() {
     clear
-    msg info "Configuring FTP..."
-                
-    sudo apt-get install -y vsftpd
-                
-    sudo rm /etc/vsftpd.conf
-                
-	sudo touch /etc/vsftpd.conf
-              
-    msg success "FTP Successfully Configured."
-                
+    msg info "Configuring FTP..."        
+    apt-get install -y vsftpd
+    
+    rm /etc/vsftpd.conf            
+    touch /etc/vsftpd.conf
+    msg success "FTP Successfully Configured."     
+    
     sleep 1
-                
     clear
                 
-	sudo mkdir /etc/ssl/private
-	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+    mkdir /etc/ssl/private
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
                 
     # Configure vsftpd.conf
     cat <<EOL >> /etc/vsftpd.conf
@@ -929,8 +930,8 @@ rsa_cert_file=/etc/ssl/private/vsftpd.pem
 rsa_private_key_file=/etc/ssl/private/vsftpd.pem
 EOL
 		
-	sudo systemctl restart vsftpd
-   	clear
+    sudo systemctl restart vsftpd
+    clear
     		
     if docker ps | grep -q "apache"; then
         print_menu
@@ -938,10 +939,10 @@ EOL
 	else
         print_menu
         msg error "FTP Server failed to start\n"
-	fi
+    fi
 }
 
-###   DOCKER INSTALLER   ###
+# --------------------          DOCKER INSTALL          -------------------- #
 install_docker() {
     clear
     msg info "Installing Docker Compose..."
@@ -1008,7 +1009,7 @@ EOL
     install_portainer
 }
 
-### PORTAINER INSTALLER ###
+# --------------------          PORTAINER INSTALL          -------------------- #
 install_portainer() {
     check_docker
     clear
@@ -1051,10 +1052,10 @@ EOL
     fi
 }
 
-###   FULL INSTALLER   ###
+# --------------------          FULL INSTALL          -------------------- #
 additional_applications() {
     PS3='Select additional applications to install: '
-    additional_options=("Cloudflared" "Apache Web Server" "Frigate NVR" "WebRTC" "Logitech Media Server" "NUT UPS Tool" "Done")
+    additional_options=("Cloudflared" "Apache Web Server" "Frigate NVR" "Logitech Media Server" "NUT UPS Tool" "Done")
     selected_apps=()
     
     while true; do
@@ -1134,7 +1135,6 @@ confirm_installation() {
     done
 }
 
-
 install_full() {
     clear
     cat << EOF
@@ -1190,9 +1190,6 @@ EOF
             "Frigate NVR")
                 install_frigate
                 ;;
-            "WebRTC")
-                install_webRTC
-                ;;
             "Logitech Media Server")
                 install_lms
                 ;;
@@ -1207,11 +1204,11 @@ EOF
 }
 
 
-##########################################
-###          INSTALL CHECKERS          ###
-##########################################
+###############################################################################################################
+###                                          INSTALL CHECKS                                                  ##
+###############################################################################################################
 
-###   HOME ASSISTANT CHECK   ###
+# --------------------          HOME ASSISTANT CHECK          -------------------- #
 check_homeassistant() {
     if ! docker ps | grep -q "home-assistant"
     then
@@ -1232,7 +1229,7 @@ check_homeassistant() {
     fi
 }
 
-###   DOCKER CHECK   ###
+# --------------------          DOCKER CHECK          -------------------- #
 check_docker() {
     if ! command -v docker &> /dev/null || ! command -v docker-compose &> /dev/null
     then
@@ -1254,11 +1251,11 @@ check_docker() {
 }
 
 
-##########################################
-###              SUB-MENUS             ###
-##########################################
+###############################################################################################################
+###                                             SUB-MENUS                                                    ##
+###############################################################################################################
 
-###   AUTOMATION   ###
+# --------------------          AUTOMATION          -------------------- #
 install_automation() {
     PS3='Select Application for Download: '
     automation_options=("Home Assistant" "Node Red" "Mosquitto" "Kuma Uptime" "Back")
@@ -1289,7 +1286,7 @@ install_automation() {
     done
 }
 
-###   AUDIO   ###
+# --------------------          AUDIO          -------------------- #
 install_audio() {
     PS3='Select Application for Download: '
     audio_options=("Logitech Media Server" "Back")
@@ -1311,20 +1308,17 @@ install_audio() {
     done
 }
 
-###   SECURITY   ###
+# --------------------          SECURITY          -------------------- #
 install_security() {
     PS3='Select Application for Download: '
-    security_options=("Frigate" "WebRTC" "Back")
+    security_options=("Frigate" "Back")
     select security_opt in "${security_options[@]}"
     do
         case $REPLY in
             1) ###   FRIGATE
                 install_frigate
-    		    ;;
-            2)  ###   WEB RTC
-                install_webRTC
-                ;;
-            3)  ###   BACK
+    		;;
+            2)  ###   BACK
                 print_menu
                 break
                 ;;
@@ -1336,7 +1330,7 @@ install_security() {
     done
 }
 
-###   NETWORK   ###
+# --------------------          NETWORK          -------------------- #
 install_network() {
     PS3='Select Application for Download: '
     network_options=("Cloudflared" "Duck DNS" "Apache Web Server" "WireGuard" "Pi Hole" "Traefik" "Back")
@@ -1373,7 +1367,7 @@ install_network() {
     done
 }
 
-###   POWER   ###
+# --------------------          POWER          -------------------- #
 install_power() {
     PS3='Select Application for Download: '
     power_options=("Nut UPS Tool" "Back")
@@ -1395,7 +1389,7 @@ install_power() {
     done
 }
 
-###   SETTINGS   ###
+# --------------------          SETTINGS          -------------------- #
 install_settings() {
     PS3='Select System Application/Setting: '
     settings_options=("FTP" "Docker" "Back")
@@ -1420,9 +1414,9 @@ install_settings() {
     done
 }
 
-##########################################
-###            PROGRAM START           ###
-##########################################
+###############################################################################################################
+###                                            PROGRAM START                                                 ##
+###############################################################################################################
 main() {
     ###   Startup
     startup
