@@ -741,7 +741,7 @@ install_pihole() {
       traefik.enable: true
       traefik.docker.network: "opt_homenet"
       traefik.http.services.adblock.loadbalancer.server.port: 80
-      traefik.http.routers.adblock.entrypoints: websecure
+      traefik.http.routers.adblock.entrypoints: web, websecure
       traefik.http.routers.adblock.rule: Host(\`adblock.local\`)
       traefik.http.routers.adblock.tls: true
       traefik.http.routers.adblock.tls.certresolver: production
