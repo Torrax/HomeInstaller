@@ -649,12 +649,12 @@ global:
 entryPoints:
   web:
     address: :80
-    # -- (Optional) Redirect all HTTP to HTTPS
-    # http:
-    #   redirections:
-    #     entryPoint:
-    #       to: websecure
-    #       scheme: https
+    ###  Redirect all HTTP to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
   websecure:
     address: :443
 
@@ -665,13 +665,6 @@ entryPoints:
 
 ## SSL Certs
 certificatesResolvers:
-  staging:
-    acme:
-      email: $email
-      storage: /etc/traefik/certs/acme.json
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-      httpChallenge:
-        entryPoint: web
   production:
     acme:
       email: $email
@@ -748,8 +741,10 @@ install_pihole() {
       traefik.enable: true
       traefik.docker.network: "opt_homenet"
       traefik.http.services.adblock.loadbalancer.server.port: 80
-      traefik.http.routers.adblock.entrypoints: web
+      traefik.http.routers.adblock.entrypoints: websecure
       traefik.http.routers.adblock.rule: Host(\`adblock.local\`)
+      traefik.http.routers.adblock.tls: true
+      traefik.http.routers.adblock.tls.certresolver: production
 
 EOL
         msg success "Pi Hole configuration added to docker-compose.yaml"
