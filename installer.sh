@@ -650,15 +650,13 @@ global:
 entryPoints:
   web:
     address: :80
+    http:
+      redirections:
+        entryPoint:
+	  to: websecure
+          scheme: https
   websecure:
     address: :443
-
-http:
-  middlewares:
-    redirect-https:
-      redirectScheme:
-        scheme: "https"
-        permanent: true
 
 ## SSL Certs
 certificatesResolvers:
