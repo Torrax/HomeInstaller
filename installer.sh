@@ -135,6 +135,22 @@ install_homeassistant() {
     privileged: true
     networks:
       - homenet
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.homeassistantlocal.loadbalancer.server.port: 8123
+      traefik.http.routers.homeassistantlocal.service: piholelocal
+      traefik.http.routers.homeassistantlocal.entrypoints: web, websecure
+      traefik.http.routers.homeassistantlocal.tls: true
+      traefik.http.routers.homeassistantlocal.rule: Host(\`home.local\`)
+      ## External
+      traefik.http.services.homeassistantweb.loadbalancer.server.port: 8123
+      traefik.http.routers.homeassistantweb.service: piholeweb
+      traefik.http.routers.homeassistantweb.entrypoints: web, websecure
+      traefik.http.routers.homeassistantweb.rule: Host(\`home.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.homeassistantweb.tls: true
+      traefik.http.routers.homeassistantweb.tls.certresolver: production
 
 EOL
         msg success "Home Assistant configuration added to docker-compose.yaml"
@@ -143,12 +159,6 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    grep "home.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:8123             home.local" >> /etc/hosts
-    fi
      
     if docker ps | grep -q "homeassistant"; then
         print_menu
@@ -181,6 +191,22 @@ install_nodered() {
     restart: always
     networks:
       - homenet
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.noderedlocal.loadbalancer.server.port: 1880
+      traefik.http.routers.noderedlocal.service: piholelocal
+      traefik.http.routers.noderedlocal.entrypoints: web, websecure
+      traefik.http.routers.noderedlocal.tls: true
+      traefik.http.routers.noderedlocal.rule: Host(\`nodered.local\`)
+      ## External
+      traefik.http.services.noderedweb.loadbalancer.server.port: 1880
+      traefik.http.routers.noderedweb.service: piholeweb
+      traefik.http.routers.noderedweb.entrypoints: web, websecure
+      traefik.http.routers.noderedweb.rule: Host(\`nodered.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.noderedweb.tls: true
+      traefik.http.routers.noderedweb.tls.certresolver: production
 
 EOL
         msg success "Node-RED configuration added to docker-compose.yaml"
@@ -226,6 +252,7 @@ install_mosquitto() {
         - /opt/mosquitto:/mosquitto
     networks:
         - homenet
+
 EOL
         msg success "Mosquitto configuration added to docker-compose.yaml"
     else
@@ -276,6 +303,22 @@ install_kuma() {
     ports:
       - "3001:3001"
     restart: always
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.kumalocal.loadbalancer.server.port: 3001
+      traefik.http.routers.kumalocal.service: piholelocal
+      traefik.http.routers.kumalocal.entrypoints: web, websecure
+      traefik.http.routers.kumalocal.tls: true
+      traefik.http.routers.kumalocal.rule: Host(\`kuma.local\`)
+      ## External
+      traefik.http.services.kumaweb.loadbalancer.server.port: 3001
+      traefik.http.routers.kumaweb.service: piholeweb
+      traefik.http.routers.kumaweb.entrypoints: web, websecure
+      traefik.http.routers.kumaweb.rule: Host(\`kuma.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.kumaweb.tls: true
+      traefik.http.routers.kumaweb.tls.certresolver: production
 
 EOL
         msg success "Kuma configuration added to docker-compose.yaml"
@@ -284,12 +327,6 @@ EOL
     fi
     
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    grep "kuma.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:3001              kuma.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "kuma"; then
         print_menu
@@ -328,6 +365,22 @@ install_lms() {
     restart: unless-stopped
     networks:
       - homenet
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.lmslocal.loadbalancer.server.port: 9000
+      traefik.http.routers.lmslocal.service: piholelocal
+      traefik.http.routers.lmslocal.entrypoints: web, websecure
+      traefik.http.routers.lmslocal.tls: true
+      traefik.http.routers.lmslocal.rule: Host(\`music.local\`)
+      ## External
+      traefik.http.services.lmsweb.loadbalancer.server.port: 9000
+      traefik.http.routers.lmsweb.service: piholeweb
+      traefik.http.routers.lmsweb.entrypoints: web, websecure
+      traefik.http.routers.lmsweb.rule: Host(\`music.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.lmsweb.tls: true
+      traefik.http.routers.lmsweb.tls.certresolver: production
 
 EOL
         msg success "Logitech Media Server configuration added to docker-compose.yaml"
@@ -336,12 +389,6 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    grep "music.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:3001              music.local" >> /etc/hosts
-    fi
      
     if docker ps | grep -q "logitechmediaserver"; then
         print_menu
@@ -389,6 +436,22 @@ install_frigate() {
     restart: unless-stopped
     networks:
       - homenet
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.frigatelocal.loadbalancer.server.port: 5000
+      traefik.http.routers.frigatelocal.service: piholelocal
+      traefik.http.routers.frigatelocal.entrypoints: web, websecure
+      traefik.http.routers.frigatelocal.tls: true
+      traefik.http.routers.frigatelocal.rule: Host(\`nvr.local\`)
+      ## External
+      traefik.http.services.frigateweb.loadbalancer.server.port: 5000
+      traefik.http.routers.frigateweb.service: piholeweb
+      traefik.http.routers.frigateweb.entrypoints: web, websecure
+      traefik.http.routers.frigateweb.rule: Host(\`nvr.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.frigateweb.tls: true
+      traefik.http.routers.frigateweb.tls.certresolver: production
 
 EOL
         msg success "Frigate NVR configuration added to docker-compose.yaml"
@@ -397,12 +460,6 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    grep "nvr.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:5000              nvr.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "frigate"; then
         print_menu
@@ -503,7 +560,22 @@ install_apache() {
       - /etc/timezone:/etc/timezone:ro
     networks:
       - homenet
-
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.apachelocal.loadbalancer.server.port: 880
+      traefik.http.routers.apachelocal.service: piholelocal
+      traefik.http.routers.apachelocal.entrypoints: web, websecure
+      traefik.http.routers.apachelocal.tls: true
+      traefik.http.routers.apachelocal.rule: Host(\`web.local\`)
+      ## External
+      traefik.http.services.apacheweb.loadbalancer.server.port: 880
+      traefik.http.routers.apacheweb.service: piholeweb
+      traefik.http.routers.apacheweb.entrypoints: web, websecure
+      traefik.http.routers.apacheweb.rule: Host(\`web.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.apacheweb.tls: true
+      traefik.http.routers.apacheweb.tls.certresolver: production
 EOL
         msg success "Apache configuration added to docker-compose.yaml"
     else
@@ -511,12 +583,6 @@ EOL
     fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
-
-    grep "web.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:880              web.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "apache"; then
         print_menu
@@ -534,7 +600,7 @@ install_duckdns() {
     clear
     msg info "Installing DuckDNS..."
     if ! grep -q "duckdns:" /opt/docker-compose.yaml; then
-    
+        echo "http://duckdns.org"
 	# Prompt the user to enter a name for the device
 	msg info "Enter Subdomain: (_____.duckdns.com)"
 	read -r subdomain
@@ -733,8 +799,9 @@ install_pihole() {
     container_name: pihole
     image: pihole/pihole:latest
     networks:
-      - aworldnet
-      - homenet
+      aworldnet:
+        ipv4_address: 192.168.1.45 ############################################################################# SELECTED BY USER
+      homenet:
     volumes:
       - /opt/pihole:/etc/pihole
       - /opt/pihole//dnsmasq.d:/etc/dnsmasq.d
@@ -749,12 +816,12 @@ install_pihole() {
       traefik.http.routers.piholelocal.service: piholelocal
       traefik.http.routers.piholelocal.entrypoints: web, websecure
       traefik.http.routers.piholelocal.rule: Host(\`adblock.local\`)
+      traefik.http.routers.piholelocal.tls: true
       ## External
       traefik.http.services.piholeweb.loadbalancer.server.port: 80
       traefik.http.routers.piholeweb.service: piholeweb
       traefik.http.routers.piholeweb.entrypoints: web, websecure
       traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`) ######################################################################## PROMPT USER
-      traefik.http.routers.piholeweb.middlewares: redirect-https
       traefik.http.routers.piholeweb.tls: true
       traefik.http.routers.piholeweb.tls.certresolver: production
 
@@ -986,12 +1053,11 @@ networks:
   aworldnet:
     driver: macvlan
     driver_opts:
-      parent: enp1s0
+      parent: enp1s0            ########################################################################################## UPDATE
     ipam:
       config:
-        - subnet: 192.168.1.0/24
-          gateway: 192.168.1.1
-          ip_range: 192.168.1.45/32    # Reserve 1 IPS Ending at this IP
+        - subnet: 192.168.1.0/24 #############################################################################################
+          gateway: 192.168.1.1 ################################################################################################
 
 services:
 
@@ -1037,10 +1103,6 @@ EOL
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
     grep "docker.local" /etc/hosts
-
-    if [ $? -ne 0 ]; then
-        echo "127.0.0.1:9443              docker.local" >> /etc/hosts
-    fi
     
     if docker ps | grep -q "portainer"; then
         print_menu
