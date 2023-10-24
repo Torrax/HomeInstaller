@@ -707,6 +707,14 @@ EOL
         msg warning "Traefik entry already exists in docker-compose.yaml"
     fi
     docker-compose -f /opt/docker-compose.yaml up -d
+
+    docker exec -it traefik mkdir /etc/traefik/
+    docker exec -it traefik mkdir /etc/traefik/certs
+    docker exec -it traefik touch /etc/traefik/certs/acme.json
+    docker exec -it traefik chmod 600 -R /etc/traefik/certs
+
+    docker restart traefik
+   
     if docker ps | grep -q "traefik"; then
         print_menu
         msg success "Traefik successfully installed and running"
