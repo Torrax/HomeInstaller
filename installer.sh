@@ -750,12 +750,14 @@ install_pihole() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.piholelocal.loadbalancer.server.port: 80
-      traefik.http.routers.piholelocal.entrypoints: web
+      traefik.http.routers.piholelocal.service: piholelocal
+      traefik.http.routers.piholelocal.entrypoints: web, websecure
       traefik.http.routers.piholelocal.rule: Host(\`adblock.local\`)
       ## External
       traefik.http.services.piholeweb.loadbalancer.server.port: 80
+      traefik.http.routers.piholeweb.service: piholeweb
       traefik.http.routers.piholeweb.entrypoints: web, websecure
-      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivemistlane.ca\`)     
+      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`)     
       traefik.http.routers.piholeweb.tls: true
       traefik.http.routers.piholeweb.tls.certresolver: production
 
