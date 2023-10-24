@@ -748,9 +748,6 @@ install_pihole() {
       traefik.http.services.adblock.loadbalancer.server.port: 80
       traefik.http.routers.adblock.entrypoints: web
       traefik.http.routers.adblock.rule: Host('adblock.local')
-      
-      
-
 EOL
         msg success "Pi Hole configuration added to docker-compose.yaml"
     else
@@ -767,6 +764,7 @@ EOL
 192.168.1.111          nvr.local ################################################################################        GENERATE IP
 192.168.1.111          music.local ################################################################################        GENERATE IP
 EOL
+    fi
 
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
 
