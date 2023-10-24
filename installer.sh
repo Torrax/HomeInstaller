@@ -180,8 +180,7 @@ install_nodered() {
     user: 1000:1000
     restart: always
     networks:
-      worldnet:
-        ipv4_address: 192.168.1.45
+      - homenet
 
 EOL
         msg success "Node-RED configuration added to docker-compose.yaml"
@@ -726,6 +725,7 @@ EOL
 install_pihole() {
     check_docker
     clear
+    
     msg info "Installing Pi Hole..."
     if ! grep -q "pihole:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
@@ -790,7 +790,7 @@ EOL
         print_menu
         msg success "Pi Hole successfully installed and running"
 
-	ping -c 4 adblock.local > /dev/null 2>&1
+	ping -c 1 -W 1 adblock.local > /dev/null 2>&1
  
 	if [ $? -eq 0 ]; then
             msg info "URL: adblock.local\n"
@@ -806,6 +806,7 @@ EOL
 # --------------------          NUT INSTALL          -------------------- #
 install_NUT() {
     clear
+    
     msg info "Installing Nut..."
     sudo apt-get install -y nut nut-client nut-server &>> \logs\nut-error.log || {
         msg error "INSTALLATION FAILED! Check Log for Details."
@@ -899,6 +900,7 @@ install_NUT() {
 # --------------------          FTP INSTALL          -------------------- #
 install_FTP() {
     clear
+    
     msg info "Configuring FTP..."        
     apt-get install -y vsftpd
     
@@ -943,6 +945,7 @@ EOL
 # --------------------          DOCKER INSTALL          -------------------- #
 install_docker() {
     clear
+    
     msg info "Installing Docker Compose..."
 
     # Docker and docker compose prerequisites
@@ -1042,8 +1045,6 @@ EOL
     if docker ps | grep -q "portainer"; then
         print_menu
         msg success "Portainer successfully installed and running"
-	python3 -m webbrowser "https://localhost:9443"
-	msg info "docker.local\n"
     else
         print_menu
         msg error "Portainer container failed to start\n"
