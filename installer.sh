@@ -740,11 +740,16 @@ install_pihole() {
     labels:
       traefik.enable: true
       traefik.docker.network: "opt_homenet"
-      traefik.http.services.adblock.loadbalancer.server.port: 80
-      traefik.http.routers.adblock.entrypoints: web, websecure
-      traefik.http.routers.adblock.rule: Host(\`adblock.local\`)
-      traefik.http.routers.adblock.tls: true
-      traefik.http.routers.adblock.tls.certresolver: production
+      ## Internal
+      traefik.http.services.piholelocal.loadbalancer.server.port: 80
+      traefik.http.routers.piholelocal.entrypoints: web
+      traefik.http.routers.piholelocal.rule: Host(\`adblock.local\`)
+      ## External
+      traefik.http.services.piholeweb.loadbalancer.server.port: 80
+      traefik.http.routers.piholeweb.entrypoints: web, websecure
+      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivemistlane.ca\`)     
+      traefik.http.routers.piholeweb.tls: true
+      traefik.http.routers.piholeweb.tls.certresolver: production
 
 EOL
         msg success "Pi Hole configuration added to docker-compose.yaml"
