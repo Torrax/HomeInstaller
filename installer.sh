@@ -233,7 +233,9 @@ EOL
     fi
 
     if [[ ! -s /opt/mosquitto/config/mosquitto.conf ]]; then
-        sudo mkdir -p /opt/mosquitto | sudo mkdir -p /opt/mosquitto/config | sudo touch /opt/mosquitto/config/mosquitto.conf
+      sudo mkdir -p /opt/mosquitto
+      sudo mkdir -p /opt/mosquitto/config
+      sudo touch /opt/mosquitto/config/mosquitto.conf
     
         cat << EOL >> /opt/mosquitto/config/mosquitto.conf
 persistence true
@@ -734,7 +736,7 @@ install_pihole() {
     container_name: pihole
     image: pihole/pihole:latest
     networks:
-      - worldnet
+      - aworldnet
       - homenet
     volumes:
       - /opt/pihole:/etc/pihole
@@ -757,6 +759,7 @@ EOL
 
     ###   Set Config File
     if [[ ! -s /opt/pihole/custom.list ]]; then
+        mkdir /opt/pihole
 	sudo touch /opt/pihole/custom.list
         cat << EOL >> /opt/pihole/custom.list
 ### Server DNS Rewrites
@@ -962,7 +965,7 @@ version: '3.9'
 networks:
   homenet:
     driver: bridge
-  worldnet:
+  aworldnet:
     driver: macvlan
     driver_opts:
       parent: enp1s0
