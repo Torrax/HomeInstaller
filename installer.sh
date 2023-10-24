@@ -970,7 +970,7 @@ networks:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
-	  ip_range: 192.168.1.45/32    # Reserve 1 IPS Ending at this IP
+          ip_range: 192.168.1.45/32    # Reserve 1 IPS Ending at this IP
 
 services:
 
