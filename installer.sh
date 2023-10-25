@@ -424,6 +424,8 @@ install_kuma() {
       - /opt/kuma:/app/data
     ports:
       - "3001:3001"
+    networks:
+      - homenet
     restart: always
     labels:
       traefik.enable: true
