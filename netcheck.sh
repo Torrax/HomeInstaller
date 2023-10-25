@@ -18,10 +18,42 @@ if ! [[ $interfaces =~ $selected_interface ]]; then
   exit 1
 fi
 
-ip_address=$(ip -o -4 addr list $selected_interface | awk '{print $4}' | cut -d/ -f1)
+ip_address=$(ip -o -4 addr list $selected_interface | awk '{print $4}')
 gateway=$(ip route | grep default | grep $selected_interface | awk '{print $3}')
 
 # Write the details to a file
+echo "Interface: $selected_interface"
+echo "IP Address: $ip_address"
+echo "Gateway: $gateway"
+
+# Prompt the user for a new IP address
+echo -e "\nWe will set a static IP for this system to make it easier to access."
+echo -e "Please enter a new IP address (e.g., $ip_address): "
+read new_ip
+
+# Create a Netplan configuration file
+cat <<EOL | sudo tee /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $selected_interface:
+      dhcp4: no
+      addresses:
+        - $new_ip
+      gateway4: $gateway
+      nameservers:
+        addresses: [8.8.8.8, 8.8.4.4]
+EOL
+
+# Apply the new network configuration
+sudo netplan apply
+
+# Verify the new settings
+echo -e "\nNew Network Configuration:"
+ip -o addr show $selected_interface
+
+# Write the details to a file
 echo "Interface: $selected_interface" > network_details.txt
-echo "IP Address: $ip_address" >> network_details.txt
+echo "IP Address: $new_ip" >> network_details.txt
 echo "Gateway: $gateway" >> network_details.txt
