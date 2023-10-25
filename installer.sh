@@ -1211,7 +1211,7 @@ install_docker() {
     # Create Docker Compose File
     if [[ ! -f /opt/docker-compose.yaml ]]; then
 	    touch /opt/docker-compose.yaml
-        cat <<'EOL' >> /opt/docker-compose.yaml  # Start of here-document
+        cat <<EOL >> /opt/docker-compose.yaml  # Start of here-document
 version: '3.9'
 
 networks:
