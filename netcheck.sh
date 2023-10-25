@@ -64,6 +64,6 @@ echo -e "\nNew Network Configuration:"
 ip -o addr show $selected_interface
 
 # Write the details to a file
-echo "Interface: $selected_interface" > /opt/net.txt
-echo "IP Address: $new_ip" >> /opt/net.txt
-echo "Gateway: $gateway" >> /opt/net.txt
+echo "Interface: $selected_interface" >> /opt/.net.txt
+echo "IP Address: $new_ip" >> /opt/.net.txt
+echo "Gateway: $gateway" >> /opt/.net.txt
