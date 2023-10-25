@@ -112,6 +112,7 @@ shutdown() {
 
 # Get the names of all network interfaces
 config_network() {
+    clear
     interfaces=$(ip -o link show | awk -F': ' '{print $2}')
 
     echo -e "Network Info:"
@@ -171,12 +172,32 @@ EOL
 
     # Verify the new settings
     echo -e "\nNew Network Configuration:"
-    ip -o addr show $selected_interface
+
+    while true; do
+        clear
+        msg info "Do you have an external domain? (y/n)"
+        read -r domain_response
+        case $domain_response in
+            y|Y)
+                echo -e "Please enter your domain (e.g., example.com): "
+                read domain
+                break
+                ;;
+            n|N)
+                domain = "example.com"
+                break
+                ;;
+            *)
+                msg error "Invalid input. Please enter y or n."
+                ;;
+        esac
+    done
 
     # Write the details to a file
     echo "Interface: $selected_interface" >> /opt/.net.txt
     echo "IP Address: $new_ip" >> /opt/.net.txt
     echo "Gateway: $gateway" >> /opt/.net.txt
+    echo "Doamin: $domain" >> /opt/.net.txt
 }
 
 
