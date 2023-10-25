@@ -275,7 +275,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:8123"
         fi
-        msg info "This PC - http://127.0.0.1:8123"
+        msg info "This PC - http://127.0.0.1:8123\n"
     else
         print_menu
         msg error "Home Assistant container failed to start\n"
@@ -344,7 +344,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:1880"
         fi
-        msg info "This PC - http://127.0.0.1:1880"
+        msg info "This PC - http://127.0.0.1:1880\n"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -463,7 +463,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:3001"
         fi
-        msg info "This PC - http://127.0.0.1:3001"
+        msg info "This PC - http://127.0.0.1:3001\n"
     else
         print_menu
         msg error "Kuma container failed to start\n"
@@ -534,7 +534,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:9000"
         fi
-        msg info "This PC - http://127.0.0.1:9000"
+        msg info "This PC - http://127.0.0.1:9000\n"
     else
         print_menu
         msg error "Logitech Media Server container failed to start\n"
@@ -614,7 +614,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:5000"
         fi
-        msg info "This PC - http://127.0.0.1:5000"
+        msg info "This PC - http://127.0.0.1:5000\n"
     else
         print_menu
         msg error "Frigate NVR container failed to start\n"
@@ -745,7 +745,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:880"
         fi
-        msg info "This PC - http://127.0.0.1:880"
+        msg info "This PC - http://127.0.0.1:880\n"
     else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
@@ -950,7 +950,7 @@ EOL
         else
             msg info "Local Network - http://$new_ip:8080"
         fi
-        msg info "This PC - http://127.0.0.1:8080"
+        msg info "This PC - http://127.0.0.1:8080\n"
         msg info "NOTE: You must enable access in the traefik.yaml\n"
     else
         print_menu
@@ -1296,7 +1296,7 @@ EOL
     
     if docker ps | grep -q "portainer"; then
         print_menu
-        msg success "Portainer successfully installed and running"
+        msg success "Portainer successfully installed and running\n"
     else
         print_menu
         msg error "Portainer container failed to start\n"
