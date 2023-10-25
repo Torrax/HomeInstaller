@@ -201,6 +201,8 @@ EOL
         esac
     done
 
+    new_ip=${new_ip%%/*}   ## Remove subnet ID from IP
+
     # Write the details to a file
     echo "selected_interface=$selected_interface" > /opt/.net.txt
     echo "new_ip=$new_ip" >> /opt/.net.txt
@@ -269,11 +271,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 home.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - home.local"
+            msg info "Local Network - http://home.local"
         else
-            msg info "Local Network - $new_ip:8123"
+            msg info "Local Network - http://$new_ip:8123"
         fi
-        msg info "This PC - 127.0.0.1:8123"
+        msg info "This PC - http://127.0.0.1:8123"
     else
         print_menu
         msg error "Home Assistant container failed to start\n"
@@ -338,11 +340,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 nodered.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - nodered.local"
+            msg info "Local Network - http://nodered.local"
         else
-            msg info "Local Network - $new_ip:1880"
+            msg info "Local Network - http://$new_ip:1880"
         fi
-        msg info "This PC - 127.0.0.1:1880"
+        msg info "This PC - http://127.0.0.1:1880"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -457,11 +459,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 kuma.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - kuma.local"
+            msg info "Local Network - http://kuma.local"
         else
-            msg info "Local Network - $new_ip:3001"
+            msg info "Local Network - http://$new_ip:3001"
         fi
-        msg info "This PC - 127.0.0.1:3001"
+        msg info "This PC - http://127.0.0.1:3001"
     else
         print_menu
         msg error "Kuma container failed to start\n"
@@ -528,11 +530,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 music.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - music.local"
+            msg info "Local Network - http://music.local"
         else
-            msg info "Local Network - $new_ip:9000"
+            msg info "Local Network - http://$new_ip:9000"
         fi
-        msg info "This PC - 127.0.0.1:9000"
+        msg info "This PC - http://127.0.0.1:9000"
     else
         print_menu
         msg error "Logitech Media Server container failed to start\n"
@@ -608,11 +610,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 nvr.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - nvr.local"
+            msg info "Local Network - http://nvr.local"
         else
-            msg info "Local Network - $new_ip:5000"
+            msg info "Local Network - http://$new_ip:5000"
         fi
-        msg info "This PC - 127.0.0.1:5000"
+        msg info "This PC - http://127.0.0.1:5000"
     else
         print_menu
         msg error "Frigate NVR container failed to start\n"
@@ -739,11 +741,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 web.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - web.local"
+            msg info "Local Network - http://web.local"
         else
-            msg info "Local Network - $new_ip:880"
+            msg info "Local Network - http://$new_ip:880"
         fi
-        msg info "This PC - 127.0.0.1:880"
+        msg info "This PC - http://127.0.0.1:880"
     else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
@@ -944,11 +946,11 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 traefik.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - traefik.local"
+            msg info "Local Network - http://traefik.local"
         else
-            msg info "Local Network - $new_ip:8080"
+            msg info "Local Network - http://$new_ip:8080"
         fi
-        msg info "This PC - 127.0.0.1:8080"
+        msg info "This PC - http://127.0.0.1:8080"
         msg info "NOTE: You must enable access in the traefik.yaml\n"
     else
         print_menu
@@ -1035,9 +1037,9 @@ EOL
         msg info "Avaliable URL:"
 	    ping -c 1 -W 1 adblock.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
-            msg info "Local Network - adblock.local"
+            msg info "Local Network - http://adblock.local"
         else
-            msg info "Local Network - $new_ip_incremented:80"
+            msg info "Local Network - http://$new_ip_incremented:80"
         fi
     else
         print_menu
