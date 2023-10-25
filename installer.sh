@@ -140,13 +140,13 @@ install_homeassistant() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.homeassistantlocal.loadbalancer.server.port: 8123
-      traefik.http.routers.homeassistantlocal.service: piholelocal
+      traefik.http.routers.homeassistantlocal.service: homeassistantlocal
       traefik.http.routers.homeassistantlocal.entrypoints: web, websecure
       traefik.http.routers.homeassistantlocal.tls: true
       traefik.http.routers.homeassistantlocal.rule: Host(\`home.local\`)
       ## External
       traefik.http.services.homeassistantweb.loadbalancer.server.port: 8123
-      traefik.http.routers.homeassistantweb.service: piholeweb
+      traefik.http.routers.homeassistantweb.service: homeassistantweb
       traefik.http.routers.homeassistantweb.entrypoints: web, websecure
       traefik.http.routers.homeassistantweb.rule: Host(\`home.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.homeassistantweb.tls: true
@@ -196,13 +196,13 @@ install_nodered() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.noderedlocal.loadbalancer.server.port: 1880
-      traefik.http.routers.noderedlocal.service: piholelocal
+      traefik.http.routers.noderedlocal.service: noderedlocal
       traefik.http.routers.noderedlocal.entrypoints: web, websecure
       traefik.http.routers.noderedlocal.tls: true
       traefik.http.routers.noderedlocal.rule: Host(\`nodered.local\`)
       ## External
       traefik.http.services.noderedweb.loadbalancer.server.port: 1880
-      traefik.http.routers.noderedweb.service: piholeweb
+      traefik.http.routers.noderedweb.service: noderedweb
       traefik.http.routers.noderedweb.entrypoints: web, websecure
       traefik.http.routers.noderedweb.rule: Host(\`nodered.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.noderedweb.tls: true
@@ -308,13 +308,13 @@ install_kuma() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.kumalocal.loadbalancer.server.port: 3001
-      traefik.http.routers.kumalocal.service: piholelocal
+      traefik.http.routers.kumalocal.service: kumalocal
       traefik.http.routers.kumalocal.entrypoints: web, websecure
       traefik.http.routers.kumalocal.tls: true
       traefik.http.routers.kumalocal.rule: Host(\`kuma.local\`)
       ## External
       traefik.http.services.kumaweb.loadbalancer.server.port: 3001
-      traefik.http.routers.kumaweb.service: piholeweb
+      traefik.http.routers.kumaweb.service: kumaweb
       traefik.http.routers.kumaweb.entrypoints: web, websecure
       traefik.http.routers.kumaweb.rule: Host(\`kuma.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.kumaweb.tls: true
@@ -370,13 +370,13 @@ install_lms() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.lmslocal.loadbalancer.server.port: 9000
-      traefik.http.routers.lmslocal.service: piholelocal
+      traefik.http.routers.lmslocal.service: lmslocal
       traefik.http.routers.lmslocal.entrypoints: web, websecure
       traefik.http.routers.lmslocal.tls: true
       traefik.http.routers.lmslocal.rule: Host(\`music.local\`)
       ## External
       traefik.http.services.lmsweb.loadbalancer.server.port: 9000
-      traefik.http.routers.lmsweb.service: piholeweb
+      traefik.http.routers.lmsweb.service: lmsweb
       traefik.http.routers.lmsweb.entrypoints: web, websecure
       traefik.http.routers.lmsweb.rule: Host(\`music.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.lmsweb.tls: true
@@ -565,13 +565,13 @@ install_apache() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.apachelocal.loadbalancer.server.port: 880
-      traefik.http.routers.apachelocal.service: piholelocal
+      traefik.http.routers.apachelocal.service: apachelocal
       traefik.http.routers.apachelocal.entrypoints: web, websecure
       traefik.http.routers.apachelocal.tls: true
       traefik.http.routers.apachelocal.rule: Host(\`web.local\`)
       ## External
       traefik.http.services.apacheweb.loadbalancer.server.port: 880
-      traefik.http.routers.apacheweb.service: piholeweb
+      traefik.http.routers.apacheweb.service: apacheweb
       traefik.http.routers.apacheweb.entrypoints: web, websecure
       traefik.http.routers.apacheweb.rule: Host(\`web.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.apacheweb.tls: true
