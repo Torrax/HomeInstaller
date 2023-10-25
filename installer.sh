@@ -214,6 +214,7 @@ EOL
 install_homeassistant() {
     check_docker
     clear
+
     msg info "Installing Home Assistant..."
     if ! grep -q "homeassistant:" /opt/docker-compose.yaml; then
         # Entry does not exist, add it
@@ -260,7 +261,15 @@ EOL
     if docker ps | grep -q "homeassistant"; then
         print_menu
         msg success "Home Assistant successfully installed and running"
-	msg info "URL: home.local\n"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 home.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - home.local"
+        else
+            msg info "Local Network - $new_ip:8123"
+        fi
+        msg info "This PC - 127.0.0.1:8123"
     else
         print_menu
         msg error "Home Assistant container failed to start\n"
@@ -271,6 +280,7 @@ EOL
 install_nodered() {
     check_docker
     clear
+
     msg info "Installing Node-RED..."
     if ! grep -q "nodered:" /opt/docker-compose.yaml; then
         # Entry does not exist, add it
@@ -320,6 +330,15 @@ EOL
         prep_nodered
         print_menu
         msg success "Node-RED successfully installed and running"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 nodered.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - nodered.local"
+        else
+            msg info "Local Network - $new_ip:1880"
+        fi
+        msg info "This PC - 127.0.0.1:1880"
     else
         print_menu
         msg error "Node-RED container failed to start\n"
@@ -335,6 +354,7 @@ prep_nodered(){
 install_mosquitto() {
     check_docker
     clear
+
     msg info "Installing Mosquitto MQTT..."
     if ! grep -q "mosquitto:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
@@ -389,6 +409,7 @@ EOL
 install_kuma() {
     check_docker
     clear
+
     msg info "Installing Kuma Uptime..."
     if ! grep -q "kuma:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
@@ -428,7 +449,15 @@ EOL
     if docker ps | grep -q "kuma"; then
         print_menu
         msg success "Kuma successfully installed and running"
-	msg info "URL: kuma.local\n"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 kuma.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - kuma.local"
+        else
+            msg info "Local Network - $new_ip:3001"
+        fi
+        msg info "This PC - 127.0.0.1:3001"
     else
         print_menu
         msg error "Kuma container failed to start\n"
@@ -439,6 +468,7 @@ EOL
 install_lms() {
     check_docker
     clear
+
     msg info "Installing Logitech Media Server..."
     if ! grep -q "lms:" /opt/docker-compose.yaml; then
         # Entry does not exist, add it
@@ -490,7 +520,15 @@ EOL
     if docker ps | grep -q "logitechmediaserver"; then
         print_menu
         msg success "Logitech Media Server successfully installed and running"
-	msg info "URL: music.local\n"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 music.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - music.local"
+        else
+            msg info "Local Network - $new_ip:9000"
+        fi
+        msg info "This PC - 127.0.0.1:9000"
     else
         print_menu
         msg error "Logitech Media Server container failed to start\n"
@@ -501,6 +539,7 @@ EOL
 install_frigate() {
     check_docker
     clear
+
     msg info "Installing Frigate NVR..."
     if ! grep -q "frigate:" /opt/docker-compose.yaml; then
         # Entry does not exist, add it
@@ -561,7 +600,15 @@ EOL
     if docker ps | grep -q "frigate"; then
         print_menu
         msg success "Frigate NVR successfully installed and running"
-	msg info "URL: nvr.local\n"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 nvr.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - nvr.local"
+        else
+            msg info "Local Network - $new_ip:5000"
+        fi
+        msg info "This PC - 127.0.0.1:5000"
     else
         print_menu
         msg error "Frigate NVR container failed to start\n"
@@ -684,8 +731,16 @@ EOL
     if docker ps | grep -q "apache"; then
         print_menu
         msg success "Apache Web Server successfully installed and running"
-	msg info "URL: web.local\n"
-	else
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 web.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - web.local"
+        else
+            msg info "Local Network - $new_ip:880"
+        fi
+        msg info "This PC - 127.0.0.1:880"
+    else
         print_menu
 	    msg error "Apache Web Server failed to start\n"
 	fi
@@ -695,16 +750,17 @@ EOL
 install_duckdns() {
     check_docker
     clear
+
     msg info "Installing DuckDNS..."
     if ! grep -q "duckdns:" /opt/docker-compose.yaml; then
         echo "http://duckdns.org"
-	# Prompt the user to enter a name for the device
-	msg info "Enter Subdomain: (_____.duckdns.com)"
-	read -r subdomain
+	    # Prompt the user to enter a name for the device
+	    msg info "Enter Subdomain: (_____.duckdns.com)"
+	    read -r subdomain
 
- 	# Prompt the user to enter a name for the device
-	msg info "Enter Token: "
-	read -r token
+ 	    # Prompt the user to enter a name for the device
+	    msg info "Enter Token: "
+	    read -r token
     
         cat << EOL >> /opt/docker-compose.yaml
   duckdns:
@@ -728,7 +784,9 @@ EOL
     else
         msg warning "DuckDNS entry already exists in docker-compose.yaml"
     fi
+
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
     if docker ps | grep -q "duckdns"; then
         print_menu
         msg success "DuckDNS successfully installed and running\n"
@@ -742,6 +800,7 @@ EOL
 install_wireguard() {
     check_docker
     clear
+
     msg info "Installing WireGuard..."
     if ! grep -q "wireguard:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
@@ -772,7 +831,9 @@ EOL
     else
         msg warning "WireGuard entry already exists in docker-compose.yaml"
     fi
+
     docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+
     if docker ps | grep -q "wireguard"; then
         print_menu
         msg success "WireGuard successfully installed and running\n"
@@ -786,16 +847,16 @@ EOL
 install_traefik() {
     check_docker
     clear
+
     msg info "Installing Traefik..."
-    
     ###   Set Config File
     if [[ ! -s /opt/traefik/traefik.yaml ]]; then
         sudo mkdir -p /opt/traefik
-	sudo touch /opt/traefik/traefik.yaml
+	    sudo touch /opt/traefik/traefik.yaml
 
-	# Prompt the user to enter a name for the device
-	msg info "\nEnter E-mail for SSL Certificates: "
-	read -r email
+	    # Prompt the user to enter a name for the device
+	    msg info "\nEnter E-mail for SSL Certificates: "
+	    read -r email
     
         cat << EOL >> /opt/traefik/traefik.yaml
 ## General
@@ -875,8 +936,16 @@ EOL
     if docker ps | grep -q "traefik"; then
         print_menu
         msg success "Traefik successfully installed and running"
-	msg info "http://localhost:8080"
-	msg info "Note you will need to allow the dashboard in /opt/traefik/traefik.yaml\n"
+
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 traefik.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - traefik.local"
+        else
+            msg info "Local Network - $new_ip:8080"
+        fi
+        msg info "This PC - 127.0.0.1:8080"
+        msg info "NOTE: You must enable access in the traefik.yaml\n"
     else
         print_menu
         msg error "Traefik container failed to start\n"
@@ -936,7 +1005,7 @@ EOL
     ###   Set Config File
     if [[ ! -s /opt/pihole/custom.list ]]; then
         mkdir /opt/pihole
-	sudo touch /opt/pihole/custom.list
+	    sudo touch /opt/pihole/custom.list
         cat << EOL >> /opt/pihole/custom.list
 ### Server DNS Rewrites
 $new_ip          adblock.local
@@ -959,12 +1028,12 @@ EOL
         print_menu
         msg success "Pi Hole successfully installed and running"
 
-	ping -c 1 -W 1 adblock.local > /dev/null 2>&1
- 
-	if [ $? -eq 0 ]; then
-            msg info "URL: adblock.local\n"
+        msg info "Avaliable URL:"
+	    ping -c 1 -W 1 adblock.local > /dev/null 2>&1
+	    if [ $? -eq 0 ]; then
+            msg info "Local Network - adblock.local"
         else
-            msg info "URL: 127.0.0.1:80\n"
+            msg info "Local Network - $new_ip_incremented:80"
         fi
     else
         print_menu
@@ -1057,32 +1126,28 @@ install_NUT() {
     sudo upsdrvctl stop
     sudo upsdrvctl start
     		
-    if docker ps | grep -q "apache"; then
-        print_menu
-            msg success "NUT Server successfully installed and running\n"
-	else
-            print_menu
-	    msg error "NUT Server failed to start\n"
-	fi
+
+    print_menu
+    msg success "NUT Server successfully installed and running\n"
 }
 
 # --------------------          FTP INSTALL          -------------------- #
 install_FTP() {
     clear
-    
+
     msg info "Configuring FTP..."        
     apt-get install -y vsftpd
-    
+
     rm /etc/vsftpd.conf            
     touch /etc/vsftpd.conf
     msg success "FTP Successfully Configured."     
-    
+
     sleep 1
     clear
-                
+       
     mkdir /etc/ssl/private
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
-                
+
     # Configure vsftpd.conf
     cat <<EOL >> /etc/vsftpd.conf
 anonymous_enable=NO
@@ -1098,7 +1163,7 @@ force_local_logins_ssl=YES
 rsa_cert_file=/etc/ssl/private/vsftpd.pem
 rsa_private_key_file=/etc/ssl/private/vsftpd.pem
 EOL
-		
+
     sudo systemctl restart vsftpd
     clear
     		
@@ -1114,7 +1179,7 @@ EOL
 # --------------------          DOCKER INSTALL          -------------------- #
 install_docker() {
     clear
-    
+
     msg info "Installing Docker Compose..."
 
     # Docker and docker compose prerequisites
@@ -1145,7 +1210,7 @@ install_docker() {
 
     # Create Docker Compose File
     if [[ ! -f /opt/docker-compose.yaml ]]; then
-	touch /opt/docker-compose.yaml
+	    touch /opt/docker-compose.yaml
         cat <<'EOL' >> /opt/docker-compose.yaml  # Start of here-document
 version: '3.9'
 
@@ -1182,6 +1247,7 @@ EOL
 install_portainer() {
     check_docker
     clear
+
     msg info "Installing Portainer..."
     if ! grep -q "portainer:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
