@@ -57,6 +57,8 @@ startup() {
 
     if [[ ! -e "/opt/.net.txt" ]]; then
         config_network
+    else
+        source /opt/.net.txt
     fi
 
     ###  UPDATE SYSTEM
@@ -197,10 +199,10 @@ EOL
     done
 
     # Write the details to a file
-    echo "Interface: $selected_interface" >> /opt/.net.txt
-    echo "IP Address: $new_ip" >> /opt/.net.txt
-    echo "Gateway: $gateway" >> /opt/.net.txt
-    echo "Domain: $domain" >> /opt/.net.txt
+    echo "selected_interface=$selected_interface" > /opt/.net.txt
+    echo "new_ip=$new_ip" >> /opt/.net.txt
+    echo "gateway=$gateway" >> /opt/.net.txt
+    echo "domain=$domain" >> /opt/.net.txt
 }
 
 
