@@ -137,11 +137,14 @@ config_network() {
 
     ip_address=$(ip -o -4 addr list $selected_interface | awk '{print $4}')
     gateway=$(ip route | grep default | grep $selected_interface | awk '{print $3}')
+    IFS='.' read -r -a octets <<< "${ip_address%%/*}"  # Remove the /24 and split by '.'
+    subnet="${octets[0]}.${octets[1]}.${octets[2]}.0/24"
 
     # Write the details to a file
     echo "Interface: $selected_interface"
     echo "IP Address: $ip_address"
     echo "Gateway: $gateway"
+    echo "Subnet: $subnet"
 
     new_ip="0.0.0.0"
     while [[ $new_ip == "0.0.0.0" ]]; do
@@ -202,6 +205,7 @@ EOL
     echo "selected_interface=$selected_interface" > /opt/.net.txt
     echo "new_ip=$new_ip" >> /opt/.net.txt
     echo "gateway=$gateway" >> /opt/.net.txt
+    echo "subnet=$subnet" >> /opt/.net.txt
     echo "domain=$domain" >> /opt/.net.txt
 }
 
@@ -1223,7 +1227,7 @@ networks:
       parent: selected_interface
     ipam:
       config:
-        - subnet: ${new_ip%/*}/24
+        - subnet: $subnet
           gateway: $gateway
 
 services:
