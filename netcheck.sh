@@ -26,10 +26,20 @@ echo "Interface: $selected_interface"
 echo "IP Address: $ip_address"
 echo "Gateway: $gateway"
 
-# Prompt the user for a new IP address
-echo -e "\nWe will set a static IP for this system to make it easier to access."
-echo -e "Please enter a new IP address (e.g., $ip_address): "
-read new_ip
+
+new_ip="0.0.0.0"
+while [[ $new_ip == "0.0.0.0" ]]; do
+    # Prompt the user for a new IP address
+    echo -e "\nWe will set a static IP for this system to make it easier to access."
+    echo -e "Please enter a new IP address (e.g., $ip_address): "
+    read new_ip
+
+    if ! [[ $new_ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\/[0-9]+$ ]]; then
+        echo "Invalid IP address format. Please try again."
+        new_ip="0.0.0.0"
+    fi
+done
+
 
 # Create a Netplan configuration file
 cat <<EOL | sudo tee /etc/netplan/01-netcfg.yaml
