@@ -200,7 +200,7 @@ EOL
     echo "Interface: $selected_interface" >> /opt/.net.txt
     echo "IP Address: $new_ip" >> /opt/.net.txt
     echo "Gateway: $gateway" >> /opt/.net.txt
-    echo "Doamin: $domain" >> /opt/.net.txt
+    echo "Domain: $domain" >> /opt/.net.txt
 }
 
 
