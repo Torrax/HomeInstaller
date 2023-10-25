@@ -1224,7 +1224,7 @@ networks:
   aworldnet:
     driver: macvlan
     driver_opts:
-      parent: selected_interface
+      parent: $selected_interface
     ipam:
       config:
         - subnet: $subnet
