@@ -564,13 +564,13 @@ install_apache() {
       traefik.enable: true
       traefik.docker.network: "opt_homenet"
       ## Internal
-      traefik.http.services.apachelocal.loadbalancer.server.port: 880
+      traefik.http.services.apachelocal.loadbalancer.server.port: 80
       traefik.http.routers.apachelocal.service: apachelocal
       traefik.http.routers.apachelocal.entrypoints: web, websecure
       traefik.http.routers.apachelocal.tls: true
       traefik.http.routers.apachelocal.rule: Host(\`web.local\`)
       ## External
-      traefik.http.services.apacheweb.loadbalancer.server.port: 880
+      traefik.http.services.apacheweb.loadbalancer.server.port: 80
       traefik.http.routers.apacheweb.service: apacheweb
       traefik.http.routers.apacheweb.entrypoints: web, websecure
       traefik.http.routers.apacheweb.rule: Host(\`web.rivermistlane.ca\`) ######################################################################## PROMPT USER
@@ -1093,6 +1093,22 @@ install_portainer() {
       - /opt/portainer/data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.portainerlocal.loadbalancer.server.port: 9443
+      traefik.http.routers.portainerlocal.service: portainerlocal
+      traefik.http.routers.portainerlocal.entrypoints: web, websecure
+      traefik.http.routers.portainerlocal.rule: Host(\`docker.local\`)
+      traefik.http.routers.portainerlocal.tls: true
+      ## External
+      traefik.http.services.portainerweb.loadbalancer.server.port: 9443
+      traefik.http.routers.portainerweb.service: portainerweb
+      traefik.http.routers.portainerweb.entrypoints: web, websecure
+      traefik.http.routers.portainerweb.rule: Host(\`docker.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.portainerweb.tls: true
+      traefik.http.routers.portainerweb.tls.certresolver: production
 
 EOL
         msg success "Portainer configuration added to docker-compose.yaml"
