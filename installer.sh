@@ -245,7 +245,7 @@ install_homeassistant() {
       traefik.http.services.homeassistantweb.loadbalancer.server.port: 8123
       traefik.http.routers.homeassistantweb.service: homeassistantweb
       traefik.http.routers.homeassistantweb.entrypoints: web, websecure
-      traefik.http.routers.homeassistantweb.rule: Host(\`home.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.homeassistantweb.rule: Host(\`home.$domain\`)
       traefik.http.routers.homeassistantweb.tls: true
       traefik.http.routers.homeassistantweb.tls.certresolver: production
 
@@ -301,7 +301,7 @@ install_nodered() {
       traefik.http.services.noderedweb.loadbalancer.server.port: 1880
       traefik.http.routers.noderedweb.service: noderedweb
       traefik.http.routers.noderedweb.entrypoints: web, websecure
-      traefik.http.routers.noderedweb.rule: Host(\`nodered.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.noderedweb.rule: Host(\`nodered.$domain\`)
       traefik.http.routers.noderedweb.tls: true
       traefik.http.routers.noderedweb.tls.certresolver: production
 
@@ -413,7 +413,7 @@ install_kuma() {
       traefik.http.services.kumaweb.loadbalancer.server.port: 3001
       traefik.http.routers.kumaweb.service: kumaweb
       traefik.http.routers.kumaweb.entrypoints: web, websecure
-      traefik.http.routers.kumaweb.rule: Host(\`kuma.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.kumaweb.rule: Host(\`kuma.$domain\`)
       traefik.http.routers.kumaweb.tls: true
       traefik.http.routers.kumaweb.tls.certresolver: production
 
@@ -475,7 +475,7 @@ install_lms() {
       traefik.http.services.lmsweb.loadbalancer.server.port: 9000
       traefik.http.routers.lmsweb.service: lmsweb
       traefik.http.routers.lmsweb.entrypoints: web, websecure
-      traefik.http.routers.lmsweb.rule: Host(\`music.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.lmsweb.rule: Host(\`music.$domain\`)
       traefik.http.routers.lmsweb.tls: true
       traefik.http.routers.lmsweb.tls.certresolver: production
 
@@ -546,7 +546,7 @@ install_frigate() {
       traefik.http.services.frigateweb.loadbalancer.server.port: 5000
       traefik.http.routers.frigateweb.service: frigateweb
       traefik.http.routers.frigateweb.entrypoints: web, websecure
-      traefik.http.routers.frigateweb.rule: Host(\`nvr.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.frigateweb.rule: Host(\`nvr.$domain\`)
       traefik.http.routers.frigateweb.tls: true
       traefik.http.routers.frigateweb.tls.certresolver: production
 
@@ -670,7 +670,7 @@ install_apache() {
       traefik.http.services.apacheweb.loadbalancer.server.port: 80
       traefik.http.routers.apacheweb.service: apacheweb
       traefik.http.routers.apacheweb.entrypoints: web, websecure
-      traefik.http.routers.apacheweb.rule: Host(\`web.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.apacheweb.rule: Host(\`web.$domain\`)
       traefik.http.routers.apacheweb.tls: true
       traefik.http.routers.apacheweb.tls.certresolver: production
 EOL
@@ -865,8 +865,8 @@ EOL
     fi
     docker-compose -f /opt/docker-compose.yaml up -d
 
-    docker exec traefik mkdir /etc/traefik/
-    docker exec traefik mkdir /etc/traefik/certs
+    docker exec traefik mkdir -p /etc/traefik/
+    docker exec traefik mkdir -p /etc/traefik/certs
     docker exec traefik touch /etc/traefik/certs/acme.json
     docker exec traefik chmod 600 -R /etc/traefik/certs
 
@@ -888,7 +888,12 @@ EOL
 install_pihole() {
     check_docker
     clear
-    
+
+    # Split the IP address into octets, and increment the last octet
+    IFS='.' read -r -a octets <<< "${new_ip%%/*}"  # Remove the /24 and split by '.'
+    last_octet=$(( ${octets[3]} + 1 ))  # Increment the last octet
+    new_ip_incremented="${octets[0]}.${octets[1]}.${octets[2]}.$last_octet"  # Reassemble the IP
+
     msg info "Installing Pi Hole..."
     if ! grep -q "pihole:" /opt/docker-compose.yaml; then
         cat << EOL >> /opt/docker-compose.yaml
@@ -897,7 +902,7 @@ install_pihole() {
     image: pihole/pihole:latest
     networks:
       aworldnet:
-        ipv4_address: 192.168.1.45 ############################################################################# SELECTED BY USER
+        ipv4_address: $new_ip_incremented    ## Static IP +1
       homenet:
     volumes:
       - /opt/pihole:/etc/pihole
@@ -918,7 +923,7 @@ install_pihole() {
       traefik.http.services.piholeweb.loadbalancer.server.port: 80
       traefik.http.routers.piholeweb.service: piholeweb
       traefik.http.routers.piholeweb.entrypoints: web, websecure
-      traefik.http.routers.piholeweb.rule: Host(\`adblock.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.piholeweb.rule: Host(\`adblock.$domain\`)
       traefik.http.routers.piholeweb.tls: true
       traefik.http.routers.piholeweb.tls.certresolver: production
 
@@ -934,15 +939,15 @@ EOL
 	sudo touch /opt/pihole/custom.list
         cat << EOL >> /opt/pihole/custom.list
 ### Server DNS Rewrites
-192.168.1.111          adblock.local ################################################################################        GENERATE IP
-192.168.1.111          traefik.local ################################################################################        GENERATE IP
-192.168.1.111          docker.local ################################################################################        GENERATE IP
-192.168.1.111          home.local ################################################################################        GENERATE IP
-192.168.1.111          nvr.local ################################################################################        GENERATE IP
-192.168.1.111          music.local ################################################################################        GENERATE IP
-192.168.1.111          web.local ################################################################################        GENERATE IP
-192.168.1.111          nodered.local ################################################################################        GENERATE IP
-192.168.1.111          kuma.local ################################################################################        GENERATE IP
+$new_ip          adblock.local
+$new_ip          traefik.local
+$new_ip          docker.local
+$new_ip          home.local
+$new_ip          nvr.local
+$new_ip          music.local
+$new_ip          web.local
+$new_ip          nodered.local
+$new_ip          kuma.local
 EOL
     fi
 
@@ -1150,11 +1155,11 @@ networks:
   aworldnet:
     driver: macvlan
     driver_opts:
-      parent: enp1s0            ########################################################################################## UPDATE
+      parent: selected_interface
     ipam:
       config:
-        - subnet: 192.168.1.0/24 #############################################################################################
-          gateway: 192.168.1.1 ################################################################################################
+        - subnet: ${new_ip%/*}/24
+          gateway: $gateway
 
 services:
 
@@ -1203,7 +1208,7 @@ install_portainer() {
       traefik.http.services.portainerweb.loadbalancer.server.port: 9443
       traefik.http.routers.portainerweb.service: portainerweb
       traefik.http.routers.portainerweb.entrypoints: web, websecure
-      traefik.http.routers.portainerweb.rule: Host(\`docker.rivermistlane.ca\`) ######################################################################## PROMPT USER
+      traefik.http.routers.portainerweb.rule: Host(\`docker.$domain\`)
       traefik.http.routers.portainerweb.tls: true
       traefik.http.routers.portainerweb.tls.certresolver: production
 
