@@ -55,6 +55,10 @@ startup() {
 
     sudo apt install -y net-tools
 
+    if ! grep -q "Gateway" /opt/.net.txt; then
+        config_network
+    fi
+
     ###  UPDATE SYSTEM
     while true; do
         clear
@@ -108,9 +112,7 @@ shutdown() {
     done
 }
 
-#!/bin/bash
-
-# Get the names of all network interfaces
+# --------------------          CONFIGURE NETWORK          -------------------- #
 config_network() {
     clear
     interfaces=$(ip -o link show | awk -F': ' '{print $2}')
@@ -533,13 +535,13 @@ install_frigate() {
       traefik.docker.network: "opt_homenet"
       ## Internal
       traefik.http.services.frigatelocal.loadbalancer.server.port: 5000
-      traefik.http.routers.frigatelocal.service: piholelocal
+      traefik.http.routers.frigatelocal.service: frigatelocal
       traefik.http.routers.frigatelocal.entrypoints: web, websecure
       traefik.http.routers.frigatelocal.tls: true
       traefik.http.routers.frigatelocal.rule: Host(\`nvr.local\`)
       ## External
       traefik.http.services.frigateweb.loadbalancer.server.port: 5000
-      traefik.http.routers.frigateweb.service: piholeweb
+      traefik.http.routers.frigateweb.service: frigateweb
       traefik.http.routers.frigateweb.entrypoints: web, websecure
       traefik.http.routers.frigateweb.rule: Host(\`nvr.rivermistlane.ca\`) ######################################################################## PROMPT USER
       traefik.http.routers.frigateweb.tls: true
