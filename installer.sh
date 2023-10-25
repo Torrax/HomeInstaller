@@ -268,7 +268,6 @@ EOL
         print_menu
         msg success "Home Assistant successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 home.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://home.local"
@@ -337,7 +336,6 @@ EOL
         print_menu
         msg success "Node-RED successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 nodered.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://nodered.local"
@@ -456,7 +454,6 @@ EOL
         print_menu
         msg success "Kuma successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 kuma.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://kuma.local"
@@ -527,7 +524,6 @@ EOL
         print_menu
         msg success "Logitech Media Server successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 music.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://music.local"
@@ -607,7 +603,6 @@ EOL
         print_menu
         msg success "Frigate NVR successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 nvr.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://nvr.local"
@@ -738,7 +733,6 @@ EOL
         print_menu
         msg success "Apache Web Server successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 web.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://web.local"
@@ -943,7 +937,6 @@ EOL
         print_menu
         msg success "Traefik successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 traefik.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://traefik.local"
@@ -1034,7 +1027,6 @@ EOL
         print_menu
         msg success "Pi Hole successfully installed and running"
 
-        msg info "Avaliable URL:"
 	    ping -c 1 -W 1 adblock.local > /dev/null 2>&1
 	    if [ $? -eq 0 ]; then
             msg info "Local Network - http://adblock.local"
