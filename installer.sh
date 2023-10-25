@@ -768,10 +768,10 @@ EOL
     fi
     docker-compose -f /opt/docker-compose.yaml up -d
 
-    docker exec -it traefik mkdir /etc/traefik/
-    docker exec -it traefik mkdir /etc/traefik/certs
-    docker exec -it traefik touch /etc/traefik/certs/acme.json
-    docker exec -it traefik chmod 600 -R /etc/traefik/certs
+    docker exec traefik mkdir /etc/traefik/
+    docker exec traefik mkdir /etc/traefik/certs
+    docker exec traefik touch /etc/traefik/certs/acme.json
+    docker exec traefik chmod 600 -R /etc/traefik/certs
 
     docker restart traefik
    
