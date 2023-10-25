@@ -55,7 +55,7 @@ startup() {
 
     sudo apt install -y net-tools
 
-    if ! grep -q "Gateway" /opt/.net.txt; then
+    if [[ ! -e "/opt/.net.txt" ]]; then
         config_network
     fi
 
@@ -117,7 +117,8 @@ config_network() {
     clear
     interfaces=$(ip -o link show | awk -F': ' '{print $2}')
 
-    echo -e "Network Info:"
+    echo "---------- Configure Network Settings ----------"
+    echo -e "\nNetwork Info:"
     ip -o addr show
 
     # Print out the interfaces and prompt the user to select one
