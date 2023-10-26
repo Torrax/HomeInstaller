@@ -852,13 +852,14 @@ install_traefik() {
 
     msg info "Installing Traefik..."
     ###   Set Config File
+
+    # Prompt the user to enter a name for the device
+    msg info "\nEnter E-mail for SSL Certificates: "
+    read -r email
+    
     if [[ ! -s /opt/traefik/traefik.yaml ]]; then
         sudo mkdir -p /opt/traefik
-	    sudo touch /opt/traefik/traefik.yaml
-
-	    # Prompt the user to enter a name for the device
-	    msg info "\nEnter E-mail for SSL Certificates: "
-	    read -r email
+	sudo touch /opt/traefik/traefik.yaml
     
         cat << EOL >> /opt/traefik/traefik.yaml
 ## General
@@ -892,6 +893,14 @@ certificatesResolvers:
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
+
+## TLS Stores
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/certificate.crt
+        keyFile: /etc/traefik/certs/private.key
 
 ## Docker Setup
 providers:
@@ -932,6 +941,9 @@ EOL
     docker exec traefik mkdir -p /etc/traefik/certs
     docker exec traefik touch /etc/traefik/certs/acme.json
     docker exec traefik chmod 600 -R /etc/traefik/certs
+
+    #  Create Local SSL cert
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /opt/traefik/certs/private.key -out /opt/traefik/certs/certificate.crt -subj "/O=Local Network/CN=*.local/emailAddress=$email" -addext "subjectAltName=DNS:*.local"
 
     docker restart traefik
    
