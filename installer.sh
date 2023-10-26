@@ -945,6 +945,9 @@ EOL
     #  Create Local SSL cert
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /opt/traefik/certs/private.key -out /opt/traefik/certs/certificate.crt -subj "/O=Local Network/CN=*.local/emailAddress=$email" -addext "subjectAltName=DNS:*.local"
 
+    # Auto Regenerate Every 6 Months
+    (crontab -l; echo "0 3 1 1,7 * /usr/bin/openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /opt/traefik/certs/private.key -out /opt/traefik/certs/certificate.crt -subj \"/O=Local Network/CN=*.local/emailAddress=$email\" -addext \"subjectAltName=DNS:*.local\"") | crontab -
+
     docker restart traefik
    
     if docker ps | grep -q "traefik"; then
