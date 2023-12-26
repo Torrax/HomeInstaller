@@ -922,6 +922,7 @@ EOL
       - "80:80"
       - "443:443"
       - "8080:8080"   # Dashboard (Disable in Production)
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /opt/traefik:/etc/traefik
