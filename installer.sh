@@ -626,66 +626,69 @@ install_cloudflared() {
     sudo mkdir -p --mode=0755 /usr/share/keyrings
     curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
 
-	echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+    echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
 
-	sudo apt-get update && sudo apt-get install cloudflared
+    sudo apt-get update && sudo apt-get install cloudflared
 
-	clear
+    clear
     msg success "Cloudflared downloaded successfully\n"
 
-	# Execute cloudflared login (this will open a browser for login)
-	cloudflared login
-		
-	clear
+    # Get the home directory of the user who invoked sudo
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+
+    # Execute cloudflared login as the original user
+    sudo -u $SUDO_USER bash -c "cloudflared login"
+
+    clear
     msg success "Login Successful\n"
-		
-	# Prompt for Tunnel Name
-	while [[ -z $TUNNEL_NAME ]]; do
-		msg info "Enter the tunnel name: "
-		read TUNNEL_NAME
-	done
+        
+    # Prompt for Tunnel Name
+    while [[ -z $TUNNEL_NAME ]]; do
+        msg info "Enter the tunnel name: "
+        read TUNNEL_NAME
+    done
 
-	# Create a tunnel and capture the Tunnel UUID
-	TUNNEL_UUID=$(cloudflared tunnel create $TUNNEL_NAME | awk '/Created tunnel/{print $NF}')
+    # Create a tunnel and capture the Tunnel UUID
+    TUNNEL_UUID=$(sudo -u $SUDO_USER bash -c "cloudflared tunnel create $TUNNEL_NAME" | awk '/Created tunnel/{print $NF}')
 
-	# Check if Tunnel UUID was captured
-	if [[ -z $TUNNEL_UUID ]]; then
-		msg error "Failed to obtain Tunnel UUID. Exiting."
-		exit 1
-	fi
+    # Check if Tunnel UUID was captured
+    if [[ -z $TUNNEL_UUID ]]; then
+        msg error "Failed to obtain Tunnel UUID. Exiting."
+        exit 1
+    fi
 
-	# Create & Route Sub Domain
-   	cloudflared tunnel route dns $TUNNEL_NAME $TUNNEL_NAME
+    # Create & Route Sub Domain
+    sudo -u $SUDO_USER bash -c "cloudflared tunnel route dns $TUNNEL_NAME $TUNNEL_NAME"
 
-	# Define the path to the credentials file using the Tunnel UUID
-	CREDENTIALS_FILE_PATH="$HOME/.cloudflared/$TUNNEL_UUID.json"
+    # Define the path to the credentials file using the Tunnel UUID
+    CREDENTIALS_FILE_PATH="$USER_HOME/.cloudflared/$TUNNEL_UUID.json"
 
-	# Create the config.yml file with the necessary parameters
-    cat <<EOL > ~/.cloudflared/config.yml
+    # Create the config.yml file with the necessary parameters as the original user
+    sudo -u $SUDO_USER bash -c "cat <<EOL > $USER_HOME/.cloudflared/config.yml
 url: localhost:80
 tunnel: $TUNNEL_UUID
 credentials-file: $CREDENTIALS_FILE_PATH
-EOL
-   		
-   	clear
-   		
-   	cloudflared tunnel --config ~/.cloudflared/config.yml run > /dev/null 2>&1 &
-   		
-   	if crontab -l | grep -q "cloudflared tunnel"; then
-	    msg info "Command is already in crontab"
-	else
-	    # Add the command to crontab to run it at reboot
-	    (crontab -l 2>/dev/null; echo "@reboot cloudflared tunnel --config ~/.cloudflared/config.yml run") | crontab -
-	    msg success "Cloudflare added to startup"
-	fi
-   		
-   	if pgrep -f "cloudflared tunnel" > /dev/null; then
+EOL"
+
+    clear
+        
+    sudo -u $SUDO_USER bash -c "cloudflared tunnel --config $USER_HOME/.cloudflared/config.yml run" > /dev/null 2>&1 &
+        
+    if sudo -u $SUDO_USER crontab -l | grep -q "cloudflared tunnel"; then
+        msg info "Command is already in crontab"
+    else
+        # Add the command to crontab to run it at reboot for the original user
+        sudo -u $SUDO_USER bash -c "(crontab -l 2>/dev/null; echo \"@reboot cloudflared tunnel --config $USER_HOME/.cloudflared/config.yml run\") | crontab -"
+        msg success "Cloudflare added to startup"
+    fi
+        
+    if pgrep -f "cloudflared tunnel" > /dev/null; then
         print_menu
-	    msg success "Cloudflared successfully installed and running\n"
-	else
+        msg success "Cloudflared successfully installed and running\n"
+    else
         print_menu
-	    msg error "Cloudflared container failed to start\n"
-	fi
+        msg error "Cloudflared container failed to start\n"
+    fi
 }
 
 # --------------------          APACHE INSTALL          -------------------- #
