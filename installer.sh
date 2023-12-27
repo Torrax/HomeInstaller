@@ -539,6 +539,63 @@ EOL
     fi
 }
 
+
+# --------------------          MUSIC ASSISTANT INSTALL          -------------------- #
+install_music_assistant() {
+    check_docker
+    clear
+
+    msg info "Installing Music Assistant..."
+    if ! grep -q "music-assistant:" /opt/docker-compose.yaml; then
+        # Entry does not exist, add it
+        cat <<EOL >> /opt/docker-compose.yaml
+  music-assistant:
+    container_name: music-assistant
+    image: ghcr.io/music-assistant/server:latest
+    volumes:
+      - /opt/music-assistant/config:/config
+      - /home/$(whoami)/Music:/music:ro
+    ports:
+      - 8095:8095/tcp
+    restart: unless-stopped
+    networks:
+      - homenet
+    labels:
+      traefik.enable: true
+      traefik.docker.network: "opt_homenet"
+      ## Internal
+      traefik.http.services.malocal.loadbalancer.server.port: 8095
+      traefik.http.routers.malocal.service: malocal
+      traefik.http.routers.malocal.entrypoints: web, websecure
+      traefik.http.routers.malocal.tls: true
+      traefik.http.routers.malocal.rule: Host(\`music.local\`)
+      ## External
+      traefik.http.services.maweb.loadbalancer.server.port: 8095
+      traefik.http.routers.maweb.service: maweb
+      traefik.http.routers.maweb.entrypoints: web, websecure
+      traefik.http.routers.maweb.rule: Host(\`music.$domain\`)
+      traefik.http.routers.maweb.tls: true
+      traefik.http.routers.maweb.tls.certresolver: production
+
+EOL
+        msg success "Music Assistant configuration added to docker-compose.yaml"
+    else
+        msg warning "Music Assistant entry already exists in docker-compose.yaml"
+    fi
+
+    docker-compose -f /opt/docker-compose.yaml up -d --remove-orphans
+     
+    if docker ps | grep -q "music-assistant"; then
+        print_menu
+        msg success "Music Assistant successfully installed and running"
+        msg info "Access Music Assistant at http://$(hostname -I | awk '{print $1}'):8095"
+    else
+        print_menu
+        msg error "Music Assistant container failed to start\n"
+    fi
+}
+
+
 # --------------------          FIRGATE INSTALL          -------------------- #
 install_frigate() {
     check_docker
