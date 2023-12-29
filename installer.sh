@@ -1149,7 +1149,7 @@ install_NUT() {
     echo -e "[monuser]\npassword = secret\nadmin master" | sudo tee "$CONFIG_DIR/upsd.users"
                 
 	# Get the output of the nut-scanner command and save to a temporary file
-	sudo nut-scanner -U | grep -A 9 '^\[nutdev' > /tmp/ups_data.txt &
+	sudo nut-scanner -U | grep -A 9 '^\[nutdev' > /tmp/ups_data.txt
 
 	# Read the data from the temporary file
 	ups_data=$(cat /tmp/ups_data.txt)
